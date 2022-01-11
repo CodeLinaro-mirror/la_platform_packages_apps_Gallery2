@@ -59,6 +59,7 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        requestWindowFeature(Window.FEATURE_OPTIONS_PANEL);
 
         if (getIntent().getBooleanExtra(KEY_DISMISS_KEYGUARD, false)) {
             getWindow().addFlags(

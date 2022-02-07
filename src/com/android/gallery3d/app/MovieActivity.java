@@ -78,6 +78,7 @@ public class MovieActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        requestWindowFeature(Window.FEATURE_OPTIONS_PANEL);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 

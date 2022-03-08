@@ -82,6 +82,7 @@ public class MoviePlayer implements
     private final Uri mUri;
     private final Handler mHandler = new Handler();
     private final AudioBecomingNoisyReceiver mAudioBecomingNoisyReceiver;
+    private final AlarmReceiver mAlarmReceiver;
     private final MovieControllerOverlay mController;
 
     private long mResumeableTime = Long.MAX_VALUE;
@@ -181,6 +182,8 @@ public class MoviePlayer implements
 
         mAudioBecomingNoisyReceiver = new AudioBecomingNoisyReceiver();
         mAudioBecomingNoisyReceiver.register();
+        mAlarmReceiver = new AlarmReceiver();
+        mAlarmReceiver.register();
 
         Intent i = new Intent(SERVICECMD);
         i.putExtra(CMDNAME, CMDPAUSE);
@@ -303,6 +306,7 @@ public class MoviePlayer implements
         }
         mVideoView.stopPlayback();
         mAudioBecomingNoisyReceiver.unregister();
+        mAlarmReceiver.unregister();
     }
 
     // This updates the time bar display (if necessary). It is called every
@@ -457,6 +461,38 @@ public class MoviePlayer implements
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE;
+    }
+
+    // We want to pause when alarm is coming.
+    private class AlarmReceiver extends BroadcastReceiver{
+
+        private boolean isPauseByAlarm = false;
+
+        public void register(){
+            IntentFilter filter=new IntentFilter("com.android.deskclock.ALARM_ALERT");
+            filter.addAction("com.android.deskclock.ALARM_DONE");
+            mContext.registerReceiver(this,filter);
+        }
+
+        public void unregister(){
+            mContext.unregisterReceiver(this);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action.equals("com.android.deskclock.ALARM_ALERT")) {
+                if (mVideoView.isPlaying()) {
+                    pauseVideo();
+                    isPauseByAlarm = true;
+                }
+            } else if (action.equals("com.android.deskclock.ALARM_DONE")) {
+                if (!mVideoView.isPlaying() && isPauseByAlarm) {
+                    playVideo();
+                    isPauseByAlarm = false;
+                }
+            }
+        }
     }
 
     // We want to pause when the headset is unplugged.

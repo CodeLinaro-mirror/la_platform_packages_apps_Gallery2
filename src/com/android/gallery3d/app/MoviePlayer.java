@@ -38,6 +38,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.VideoView;
+import android.telephony.TelephonyManager;
+import android.telephony.PhoneStateListener;
 
 import com.android.gallery3d.R;
 import com.android.gallery3d.common.ApiHelper;
@@ -98,6 +100,9 @@ public class MoviePlayer implements
 
     private Virtualizer mVirtualizer;
 
+    private TelephonyManager mTelephonyManager;
+    private final PhoneStateChangeListener mPhoneStateListener = new PhoneStateChangeListener();
+
     private final Runnable mPlayingChecker = new Runnable() {
         @Override
         public void run() {
@@ -133,6 +138,9 @@ public class MoviePlayer implements
         mVideoView.setOnErrorListener(this);
         mVideoView.setOnCompletionListener(this);
         mVideoView.setVideoURI(mUri);
+
+        mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        mTelephonyManager.listen(mPhoneStateListener.init(), PhoneStateListener.LISTEN_CALL_STATE);
 
         Intent ai = movieActivity.getIntent();
         boolean virtualize = ai.getBooleanExtra(VIRTUALIZE_EXTRA, false);
@@ -512,6 +520,30 @@ public class MoviePlayer implements
             if (mVideoView.isPlaying()) pauseVideo();
         }
     }
+
+    // We want to pause when the Call is comming.
+    private final class PhoneStateChangeListener extends PhoneStateListener {
+
+        private int mPhoneCallState;
+
+        PhoneStateChangeListener init() {
+            mPhoneCallState = -1;
+            return this;
+        }
+
+        @Override
+        public void onCallStateChanged(int state, String ignored) {
+            if (mPhoneCallState == -1) {
+                mPhoneCallState = state;
+            }
+
+            if (state != TelephonyManager.CALL_STATE_IDLE && state != mPhoneCallState
+                    && mVideoView.isPlaying()) {
+                pauseVideo();
+            }
+        }
+    }
+
 }
 
 class Bookmarker {

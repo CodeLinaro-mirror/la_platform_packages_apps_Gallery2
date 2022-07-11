@@ -474,11 +474,9 @@ public class MoviePlayer implements
     // We want to pause when alarm is coming.
     private class AlarmReceiver extends BroadcastReceiver{
 
-        private boolean isPauseByAlarm = false;
-
         public void register(){
             IntentFilter filter=new IntentFilter("com.android.deskclock.ALARM_ALERT");
-            filter.addAction("com.android.deskclock.ALARM_DONE");
+            filter.addAction("com.qualcomm.qti.alarm.ALARM_ALERT");
             mContext.registerReceiver(this,filter);
         }
 
@@ -488,17 +486,8 @@ public class MoviePlayer implements
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (action.equals("com.android.deskclock.ALARM_ALERT")) {
-                if (mVideoView.isPlaying()) {
-                    pauseVideo();
-                    isPauseByAlarm = true;
-                }
-            } else if (action.equals("com.android.deskclock.ALARM_DONE")) {
-                if (!mVideoView.isPlaying() && isPauseByAlarm) {
-                    playVideo();
-                    isPauseByAlarm = false;
-                }
+            if (mVideoView.isPlaying()) {
+                pauseVideo();
             }
         }
     }

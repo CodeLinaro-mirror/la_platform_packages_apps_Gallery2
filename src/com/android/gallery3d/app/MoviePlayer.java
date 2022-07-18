@@ -26,6 +26,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Virtualizer;
@@ -103,6 +104,8 @@ public class MoviePlayer implements
     private TelephonyManager mTelephonyManager;
     private final PhoneStateChangeListener mPhoneStateListener = new PhoneStateChangeListener();
 
+    private boolean mAudioFocus;
+
     private final Runnable mPlayingChecker = new Runnable() {
         @Override
         public void run() {
@@ -137,6 +140,7 @@ public class MoviePlayer implements
 
         mVideoView.setOnErrorListener(this);
         mVideoView.setOnCompletionListener(this);
+        mVideoView.setAudioFocusRequest(AudioManager.AUDIOFOCUS_NONE);
         mVideoView.setVideoURI(mUri);
 
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
@@ -211,6 +215,10 @@ public class MoviePlayer implements
                 startVideo();
             }
         }
+        ((AudioManager) mContext.getSystemService(mContext.AUDIO_SERVICE))
+            .requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN);
+        mAudioFocus = true;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -292,9 +300,18 @@ public class MoviePlayer implements
         mBookmarker.setBookmark(mUri, mVideoPosition, mVideoView.getDuration());
         mVideoView.suspend();
         mResumeableTime = System.currentTimeMillis() + RESUMEABLE_TIMEOUT;
+        ((AudioManager) mContext.getSystemService(mContext.AUDIO_SERVICE))
+            .abandonAudioFocus(mAudioFocusListener);
+        mAudioFocus = false;
     }
 
     public void onResume() {
+        if (!mAudioFocus) {
+            ((AudioManager) mContext.getSystemService(mContext.AUDIO_SERVICE))
+                .requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+            mAudioFocus = true;
+        }
         if (mHasPaused) {
             mVideoView.seekTo(mVideoPosition);
             mVideoView.resume();
@@ -532,6 +549,21 @@ public class MoviePlayer implements
             }
         }
     }
+
+    private OnAudioFocusChangeListener mAudioFocusListener =
+        new OnAudioFocusChangeListener() {
+            public void onAudioFocusChange(int focusChange) {
+                switch (focusChange) {
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        if (mVideoView.isPlaying()) {
+                            pauseVideo();
+                        }
+                        break;
+                }
+        }
+    };
 
 }
 

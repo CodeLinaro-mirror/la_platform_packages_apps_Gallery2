@@ -26,6 +26,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Virtualizer;
@@ -38,6 +39,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.VideoView;
+import android.telephony.TelephonyManager;
+import android.telephony.PhoneStateListener;
 
 import com.android.gallery3d.R;
 import com.android.gallery3d.common.ApiHelper;
@@ -82,6 +85,7 @@ public class MoviePlayer implements
     private final Uri mUri;
     private final Handler mHandler = new Handler();
     private final AudioBecomingNoisyReceiver mAudioBecomingNoisyReceiver;
+    private final AlarmReceiver mAlarmReceiver;
     private final MovieControllerOverlay mController;
 
     private long mResumeableTime = Long.MAX_VALUE;
@@ -96,6 +100,11 @@ public class MoviePlayer implements
     private boolean mShowing;
 
     private Virtualizer mVirtualizer;
+
+    private TelephonyManager mTelephonyManager;
+    private final PhoneStateChangeListener mPhoneStateListener = new PhoneStateChangeListener();
+
+    private boolean mAudioFocus;
 
     private final Runnable mPlayingChecker = new Runnable() {
         @Override
@@ -131,7 +140,11 @@ public class MoviePlayer implements
 
         mVideoView.setOnErrorListener(this);
         mVideoView.setOnCompletionListener(this);
+        mVideoView.setAudioFocusRequest(AudioManager.AUDIOFOCUS_NONE);
         mVideoView.setVideoURI(mUri);
+
+        mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        mTelephonyManager.listen(mPhoneStateListener.init(), PhoneStateListener.LISTEN_CALL_STATE);
 
         Intent ai = movieActivity.getIntent();
         boolean virtualize = ai.getBooleanExtra(VIRTUALIZE_EXTRA, false);
@@ -181,6 +194,8 @@ public class MoviePlayer implements
 
         mAudioBecomingNoisyReceiver = new AudioBecomingNoisyReceiver();
         mAudioBecomingNoisyReceiver.register();
+        mAlarmReceiver = new AlarmReceiver();
+        mAlarmReceiver.register();
 
         Intent i = new Intent(SERVICECMD);
         i.putExtra(CMDNAME, CMDPAUSE);
@@ -200,6 +215,10 @@ public class MoviePlayer implements
                 startVideo();
             }
         }
+        ((AudioManager) mContext.getSystemService(mContext.AUDIO_SERVICE))
+            .requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN);
+        mAudioFocus = true;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -281,9 +300,18 @@ public class MoviePlayer implements
         mBookmarker.setBookmark(mUri, mVideoPosition, mVideoView.getDuration());
         mVideoView.suspend();
         mResumeableTime = System.currentTimeMillis() + RESUMEABLE_TIMEOUT;
+        ((AudioManager) mContext.getSystemService(mContext.AUDIO_SERVICE))
+            .abandonAudioFocus(mAudioFocusListener);
+        mAudioFocus = false;
     }
 
     public void onResume() {
+        if (!mAudioFocus) {
+            ((AudioManager) mContext.getSystemService(mContext.AUDIO_SERVICE))
+                .requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+            mAudioFocus = true;
+        }
         if (mHasPaused) {
             mVideoView.seekTo(mVideoPosition);
             mVideoView.resume();
@@ -303,6 +331,7 @@ public class MoviePlayer implements
         }
         mVideoView.stopPlayback();
         mAudioBecomingNoisyReceiver.unregister();
+        mAlarmReceiver.unregister();
     }
 
     // This updates the time bar display (if necessary). It is called every
@@ -459,6 +488,27 @@ public class MoviePlayer implements
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE;
     }
 
+    // We want to pause when alarm is coming.
+    private class AlarmReceiver extends BroadcastReceiver{
+
+        public void register(){
+            IntentFilter filter=new IntentFilter("com.android.deskclock.ALARM_ALERT");
+            filter.addAction("com.qualcomm.qti.alarm.ALARM_ALERT");
+            mContext.registerReceiver(this,filter);
+        }
+
+        public void unregister(){
+            mContext.unregisterReceiver(this);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mVideoView.isPlaying()) {
+                pauseVideo();
+            }
+        }
+    }
+
     // We want to pause when the headset is unplugged.
     private class AudioBecomingNoisyReceiver extends BroadcastReceiver {
 
@@ -476,6 +526,45 @@ public class MoviePlayer implements
             if (mVideoView.isPlaying()) pauseVideo();
         }
     }
+
+    // We want to pause when the Call is comming.
+    private final class PhoneStateChangeListener extends PhoneStateListener {
+
+        private int mPhoneCallState;
+
+        PhoneStateChangeListener init() {
+            mPhoneCallState = -1;
+            return this;
+        }
+
+        @Override
+        public void onCallStateChanged(int state, String ignored) {
+            if (mPhoneCallState == -1) {
+                mPhoneCallState = state;
+            }
+
+            if (state != TelephonyManager.CALL_STATE_IDLE && state != mPhoneCallState
+                    && mVideoView.isPlaying()) {
+                pauseVideo();
+            }
+        }
+    }
+
+    private OnAudioFocusChangeListener mAudioFocusListener =
+        new OnAudioFocusChangeListener() {
+            public void onAudioFocusChange(int focusChange) {
+                switch (focusChange) {
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        if (mVideoView.isPlaying()) {
+                            pauseVideo();
+                        }
+                        break;
+                }
+        }
+    };
+
 }
 
 class Bookmarker {

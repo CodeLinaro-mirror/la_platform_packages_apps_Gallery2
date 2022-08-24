@@ -37,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.MotionEvent;
 
 import com.android.gallery3d.R;
 import com.android.gallery3d.common.ApiHelper;
@@ -364,5 +365,17 @@ public class AbstractGalleryActivity extends Activity implements GalleryContext 
         } catch (FileNotFoundException fnfe) {
             Log.e(TAG, "Error printing an image", fnfe);
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int resourceId = getResources().getIdentifier("status_bar_height","dimen","android");
+        int ignoreArea = getResources().getDimensionPixelSize(resourceId)/4;
+        if ((getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0
+                && ev.getAction() == MotionEvent.ACTION_DOWN
+                && ev.getY() < ignoreArea) {
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }

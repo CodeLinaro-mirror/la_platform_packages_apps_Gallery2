@@ -1029,7 +1029,11 @@ public abstract class PhotoPage extends ActivityState implements
         String confirmMsg = null;
         switch (action) {
             case android.R.id.home: {
-                onUpPressed();
+                if(GalleryActivity.openFromDesk || !mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH)){
+                    onUpPressed();
+                } else {
+                    onBackPressed();
+                }
                 return true;
             }
             case R.id.action_slideshow: {

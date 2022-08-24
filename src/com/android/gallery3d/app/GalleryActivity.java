@@ -50,6 +50,7 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
     public static final String KEY_TYPE_BITS = "type-bits";
     public static final String KEY_MEDIA_TYPES = "mediaTypes";
     public static final String KEY_DISMISS_KEYGUARD = "dismiss-keyguard";
+    public static boolean openFromDesk = true;
 
     private static final String TAG = "GalleryActivity";
     private Dialog mVersionCheckDialog;
@@ -80,6 +81,7 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
         String action = intent.getAction();
 
         if (Intent.ACTION_GET_CONTENT.equalsIgnoreCase(action)) {
+            openFromDesk = false;
             startGetContent(intent);
         } else if (Intent.ACTION_PICK.equalsIgnoreCase(action)) {
             // We do NOT really support the PICK intent. Handle it as
@@ -91,9 +93,11 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
                 if (type.endsWith("/image")) intent.setType("image/*");
                 if (type.endsWith("/video")) intent.setType("video/*");
             }
+            openFromDesk = false;
             startGetContent(intent);
         } else if (Intent.ACTION_VIEW.equalsIgnoreCase(action)
                 || ACTION_REVIEW.equalsIgnoreCase(action)){
+            openFromDesk = false;
             startViewAction(intent);
         } else {
             startDefaultPage();

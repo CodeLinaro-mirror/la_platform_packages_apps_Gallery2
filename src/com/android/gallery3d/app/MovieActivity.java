@@ -78,6 +78,7 @@ public class MovieActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        requestWindowFeature(Window.FEATURE_OPTIONS_PANEL);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
@@ -215,9 +216,6 @@ public class MovieActivity extends Activity {
 
     @Override
     public void onStart() {
-        ((AudioManager) getSystemService(AUDIO_SERVICE))
-                .requestAudioFocus(null, AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         super.onStart();
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -228,8 +226,6 @@ public class MovieActivity extends Activity {
 
     @Override
     protected void onStop() {
-        ((AudioManager) getSystemService(AUDIO_SERVICE))
-                .abandonAudioFocus(null);
         super.onStop();
 
         mWakeLock.release();

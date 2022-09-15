@@ -533,6 +533,15 @@ public class GLRootView extends GLSurfaceView
     public void onPause() {
         unfreeze();
         super.onPause();
+        mFirstDraw = true;
+        post(new Runnable() {
+            @Override
+            public void run() {
+                View root = getRootView();
+                View cover = root.findViewById(R.id.gl_root_cover);
+                cover.setVisibility(VISIBLE);
+            }
+        });
         if (DEBUG_PROFILE) {
             Log.d(TAG, "Stop profiling");
             Profile.disableAll();

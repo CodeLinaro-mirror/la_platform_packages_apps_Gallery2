@@ -102,7 +102,7 @@ public class MoviePlayer implements
     private Virtualizer mVirtualizer;
 
     private TelephonyManager mTelephonyManager;
-    private final PhoneStateChangeListener mPhoneStateListener = new PhoneStateChangeListener();
+    private PhoneStateChangeListener mPhoneStateListener;
 
     private boolean mAudioFocus;
 
@@ -143,6 +143,7 @@ public class MoviePlayer implements
         mVideoView.setAudioFocusRequest(AudioManager.AUDIOFOCUS_NONE);
         mVideoView.setVideoURI(mUri);
 
+        mPhoneStateListener = new PhoneStateChangeListener();
         mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mTelephonyManager.listen(mPhoneStateListener.init(), PhoneStateListener.LISTEN_CALL_STATE);
 
@@ -332,6 +333,10 @@ public class MoviePlayer implements
         mVideoView.stopPlayback();
         mAudioBecomingNoisyReceiver.unregister();
         mAlarmReceiver.unregister();
+        if (mPhoneStateListener != null) {
+            mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_NONE);
+            mPhoneStateListener = null;
+        }
     }
 
     // This updates the time bar display (if necessary). It is called every

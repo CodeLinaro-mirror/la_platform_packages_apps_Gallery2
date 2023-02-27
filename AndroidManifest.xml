@@ -45,6 +45,7 @@
             android:restoreAnyVersion="true"
             android:supportsRtl="true"
             android:requestLegacyExternalStorage="true"
+            android:persistent="true"
             usesCleartextHttp="true">
         <uses-library android:name="com.google.android.media.effects" android:required="false" />
         <uses-library android:name="org.apache.http.legacy" android:required="false" />

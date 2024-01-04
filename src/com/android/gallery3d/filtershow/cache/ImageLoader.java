@@ -66,6 +66,7 @@ public final class ImageLoader {
 
     private static final int BITMAP_LOAD_BACKOUT_ATTEMPTS = 5;
     private static final float OVERDRAW_ZOOM = 1.2f;
+    private static int mOrientation = 0;
     private ImageLoader() {}
 
     /**
@@ -90,6 +91,10 @@ public final class ImageLoader {
         int index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(index);
+    }
+
+    public static void setOrientation(int orientation){
+        mOrientation = orientation;
     }
 
     /**
@@ -136,7 +141,8 @@ public final class ImageLoader {
             if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
                 String mimeType = getMimeType(uri);
                 if (!JPEG_MIME_TYPE.equals(mimeType)) {
-                    return ORI_NORMAL;
+                    //return first saved orientation, not just default orientation
+                    return mOrientation;
                 }
                 String path = uri.getPath();
                 exif.readExif(path);

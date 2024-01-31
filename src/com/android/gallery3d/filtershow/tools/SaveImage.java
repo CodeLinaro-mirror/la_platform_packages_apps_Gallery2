@@ -327,7 +327,7 @@ public class SaveImage {
 
     public Uri processAndSaveImage(ImagePreset preset, boolean flatten,
                                    int quality, float sizeFactor, boolean exit) {
-
+        ImageLoader.setOrientation(ImageLoader.getMetadataOrientation(mContext, mSelectedImageUri));
         Uri uri = null;
         if (exit) {
             uri = resetToOriginalImageIfNeeded(preset, !flatten);

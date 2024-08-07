@@ -13,11 +13,14 @@ android_app {
         "com.android.gallery3d.common2",
         "xmp_toolkit",
         "mp4parser",
+        "androidx-constraintlayout_constraintlayout",
+        "gson",
     ],
 
     srcs: [
         "src/**/*.java",
         "src_pd/**/*.java",
+        "src/**/*.kt",
     ],
 
     resource_dirs: ["res"],

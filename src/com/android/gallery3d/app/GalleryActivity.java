@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
 
 package com.android.gallery3d.app;
 
@@ -37,6 +42,7 @@ import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.picasasource.PicasaSource;
+import com.android.gallery3d.util.C2paUtil;
 import com.android.gallery3d.util.GalleryUtils;
 
 public final class GalleryActivity extends AbstractGalleryActivity implements OnCancelListener {
@@ -72,6 +78,7 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
         } else {
             initializeByIntent();
         }
+        C2paUtil.connectC2PAService();
     }
 
     private void initializeByIntent() {

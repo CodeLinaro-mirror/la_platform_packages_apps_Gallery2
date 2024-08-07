@@ -13,6 +13,25 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+<!-- Copyright (c) 2024 Truepic
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+-->
 <resources>
     <color name="default_background">#000</color>
     <color name="ic_launcher_gallery_background">#4285f4</color>
@@ -70,5 +89,22 @@
     <color name="face_detect_success">#8050d060</color>
     <color name="face_detect_fail">#80d05060</color>
     <color name="gray">#FFAAAAAA</color>
+
+    <!-- Figma Colors -->
+    <color name="lensTransparent">#00ffffff</color>
+    <color name="lensGrey">#444444</color>
+    <color name="lensGrey100">#E2E8EC</color>
+    <color name="lensGrey600">#616A72</color>
+    <color name="lensGrey900">#202529</color>
+    <color name="lensBlue500">#1A6DFF</color>
+    <color name="lensBlue600">#165AD9</color>
+    <color name="lensBlue700">#1247B2</color>
+    <color name="lensWhite">#FFFFFF</color>
+    <color name="lensBlack">#000000</color>
+    <color name="lensGreyAlt">#FAFAFA</color>
+    <color name="actionRed">#D91A3C</color>
+
+    <color name="shadow">#80000000</color>
+    <color name="thumbnailGray">#bcbcbc</color>
 
 </resources>

@@ -1,0 +1,91 @@
+/*
+ * Copyright (c) 2024 Truepic
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package com.truepic.lensverify.data.c2padata;
+
+import com.google.gson.annotations.SerializedName;
+
+public class Certificate {
+
+    @SerializedName("cert_der")
+    private String certDer;
+
+    @SerializedName("issuer_name")
+    private String issuerName;
+
+    @SerializedName("organization_name")
+    private String organizationName;
+
+    @SerializedName("organization_unit_name")
+    private String organizationUnitName;
+
+    @SerializedName("status")
+    private String status;
+
+    @SerializedName("status_reason")
+    private String statusReason;
+
+    @SerializedName("subject_name")
+    private String subjectName;
+
+    @SerializedName("valid_not_after")
+    private String validNotAfter;
+
+    @SerializedName("valid_not_before")
+    private String validNotBefore;
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public String getCertDer() {
+        return certDer;
+    }
+
+    public String getIssuerName() {
+        return issuerName;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public String getOrganizationUnitName() {
+        return organizationUnitName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getStatusReason() {
+        return statusReason;
+    }
+
+    public String getValidNotAfter() {
+        return validNotAfter;
+    }
+
+    public String getValidNotBefore() {
+        return validNotBefore;
+    }
+
+}

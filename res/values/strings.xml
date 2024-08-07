@@ -13,7 +13,25 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+<!-- Copyright (c) 2024 Truepic
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
 
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+-->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Gallery</string>
     <!-- Title for picture frame gadget to show in list of all available gadgets -->
@@ -1115,4 +1133,29 @@ CHAR LIMIT = NONE] -->
         <item quantity="one">%1$d photo</item>
         <item quantity="other">%1$d photos</item>
     </plurals>
+
+    <string name="c2pa_info_title">Content Credentials</string>
+    <string name="content_history">Content History</string>
+    <string name="image_thumbnail">Image thumbnail</string>
+    <string name="c2pa_info_thumbnail_desc_original">Original</string>
+    <string name="c2pa_info_thumbnail_desc_modified">Modified</string>
+    <string name="c2pa_info_thumbnail_type_photo">Photo</string>
+    <string name="c2pa_info_thumbnail_type_image">Image</string>
+    <string name="c2pa_info_thumbnail_type_video">Video</string>
+    <string name="c2pa_info_thumbnail_type_audio">Audio</string>
+    <string name="c2pa_info_ai">Contains AI-generated content</string>
+    <string name="c2pa_info_unknown">Signed by an unknown source</string>
+    <string name="c2pa_info_captured">Captured</string>
+    <string name="c2pa_info_captured_with">Captured with</string>
+    <string name="c2pa_info_na">N/A</string>
+    <string name="c2pa_info_location">Location</string>
+    <string name="c2pa_info_modifications">Modifications</string>
+    <string name="c2pa_info_signed_by">Signed by</string>
+    <string name="c2pa_info_signed_with">Signed with</string>
+    <string name="back_content_desc">Back</string>
+    <string name="c2pa_info_thumbnail_desc_creative_work">Creative Work</string>
+    <string name="c2pa_info_created">Created</string>
+    <string name="c2pa_info_created_with">Created with</string>
+    <string name="c2pa_invalid_hash">Content credentials cannot be displayed because this file has been edited without signing.</string>
+    <string name="c2pa_invalid_signature">Content credentials cannot be displayed because this file has been signed by an unknown source.</string>
 </resources>

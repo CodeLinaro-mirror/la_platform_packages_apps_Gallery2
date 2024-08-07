@@ -1,0 +1,29 @@
+<!-- Copyright (c) 2024 Truepic
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="111dp"
+    android:height="98dp"
+    android:viewportWidth="111"
+    android:viewportHeight="98">
+  <path
+      android:pathData="M17.31,4.16C17.31,2.06 19.02,0.35 21.13,0.35C23.24,0.35 24.94,2.06 24.94,4.16L24.94,93.61C24.94,95.72 23.24,97.43 21.13,97.43C19.02,97.43 17.31,95.72 17.31,93.61L17.31,4.16ZM51.66,16.09C51.66,13.98 53.37,12.27 55.48,12.27C57.58,12.27 59.29,13.98 59.29,16.09V81.69C59.29,83.79 57.58,85.5 55.48,85.5C53.37,85.5 51.66,83.79 51.66,81.69L51.66,16.09ZM38.3,22.71C36.19,22.71 34.49,24.42 34.49,26.53V71.25C34.49,73.36 36.19,75.07 38.3,75.07C40.41,75.07 42.12,73.36 42.12,71.25V26.53C42.12,24.42 40.41,22.71 38.3,22.71ZM72.65,28.67C70.54,28.67 68.83,30.38 68.83,32.49V65.29C68.83,67.4 70.54,69.1 72.65,69.1C74.76,69.1 76.47,67.4 76.47,65.29V32.49C76.47,30.38 74.76,28.67 72.65,28.67ZM3.95,30.16C1.85,30.16 0.14,31.87 0.14,33.98V63.8C0.14,65.9 1.85,67.61 3.95,67.61C6.06,67.61 7.77,65.9 7.77,63.8V33.98C7.77,31.87 6.06,30.16 3.95,30.16ZM89.83,9.29C87.72,9.29 86.01,11 86.01,13.11L86.01,84.67C86.01,86.78 87.72,88.49 89.83,88.49C91.93,88.49 93.64,86.78 93.64,84.67L93.64,13.11C93.64,11 91.93,9.29 89.83,9.29ZM103.18,36.96C103.18,34.85 104.89,33.15 107,33.15C109.11,33.15 110.82,34.85 110.82,36.96V60.82C110.82,62.92 109.11,64.63 107,64.63C104.89,64.63 103.18,62.92 103.18,60.82L103.18,36.96Z"
+      android:fillColor="#7B7B7B"
+      android:fillType="evenOdd"/>
+</vector>

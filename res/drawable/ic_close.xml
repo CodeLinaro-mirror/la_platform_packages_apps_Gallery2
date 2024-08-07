@@ -1,0 +1,31 @@
+<!-- Copyright (c) 2024 Truepic
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="18dp"
+    android:height="18dp"
+    android:viewportWidth="18"
+    android:viewportHeight="18">
+  <path
+      android:pathData="M16.566,0.792L16.305,1.053L16.566,0.792C16.143,0.37 15.458,0.37 15.035,0.792L15.296,1.053L15.035,0.792L9.242,6.585C8.998,6.829 8.603,6.829 8.359,6.585L2.566,0.792C2.143,0.37 1.458,0.37 1.035,0.792C0.613,1.215 0.613,1.9 1.035,2.323L6.828,8.115C7.072,8.36 7.072,8.755 6.828,8.999L1.035,14.792C0.613,15.215 0.613,15.9 1.035,16.323L1.296,16.062L1.035,16.323C1.458,16.745 2.143,16.745 2.566,16.323L8.359,10.53C8.603,10.286 8.998,10.286 9.242,10.53L15.035,16.323C15.458,16.745 16.143,16.745 16.566,16.323C16.988,15.9 16.988,15.215 16.566,14.792L10.773,8.999C10.529,8.755 10.529,8.36 10.773,8.115L16.566,2.323C16.988,1.9 16.988,1.215 16.566,0.792Z"
+      android:strokeWidth="0.75"
+      android:fillColor="#202529"
+      android:strokeColor="#202529"/>
+</vector>
+

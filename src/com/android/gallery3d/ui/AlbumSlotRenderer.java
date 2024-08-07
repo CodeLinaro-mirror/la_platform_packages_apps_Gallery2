@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
 
 package com.android.gallery3d.ui;
 
 import com.android.gallery3d.app.AbstractGalleryActivity;
 import com.android.gallery3d.app.AlbumDataLoader;
+import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.glrenderer.ColorTexture;
@@ -131,6 +137,12 @@ public class AlbumSlotRenderer extends AbstractSlotRenderer {
             drawPanoramaIcon(canvas, width, height);
         }
 
+        Log.d(TAG,"renderSlot item:" + entry.item.getName() + ",status:" + entry.hasC2pa);
+        if (entry.hasC2pa == MediaItem.C2PAStatus.C2PA.ordinal()) {
+            drawC2paInfoIcon(canvas, width, height);
+        } else {
+            drawC2paInvalideInfoIcon(canvas, width, height);
+        }
         renderRequestFlags |= renderOverlay(canvas, index, entry, width, height);
 
         return renderRequestFlags;

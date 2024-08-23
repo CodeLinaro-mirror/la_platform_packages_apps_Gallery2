@@ -137,10 +137,10 @@ public class AlbumSlotRenderer extends AbstractSlotRenderer {
             drawPanoramaIcon(canvas, width, height);
         }
 
-        Log.d(TAG,"renderSlot item:" + entry.item.getName() + ",status:" + entry.hasC2pa);
+        Log.d(TAG,"renderSlot item:" + entry.item+ ",status:" + entry.hasC2pa);
         if (entry.hasC2pa == MediaItem.C2PAStatus.C2PA.ordinal()) {
             drawC2paInfoIcon(canvas, width, height);
-        } else {
+        } else if(entry.hasC2pa != MediaItem.C2PAStatus.NON_C2PA.ordinal()){
             drawC2paInvalideInfoIcon(canvas, width, height);
         }
         renderRequestFlags |= renderOverlay(canvas, index, entry, width, height);

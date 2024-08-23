@@ -78,6 +78,7 @@ public final class GalleryActivity extends AbstractGalleryActivity implements On
         } else {
             initializeByIntent();
         }
+        C2paUtil.setContext(this);
         C2paUtil.connectC2PAService();
     }
 

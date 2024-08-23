@@ -27,11 +27,14 @@
 
 package com.android.gallery3d.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.common.Ashmem;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.ServiceManager;
 import android.os.SharedMemory;
+import android.preference.PreferenceManager;
 import android.system.ErrnoException;
 import android.system.OsConstants;
 
@@ -39,7 +42,6 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -59,6 +61,7 @@ import com.truepic.lensverify.data.c2padata.ValidationStatus;
 
 public class C2paUtil {
     private static final String TAG = "C2paUtil";
+    private static Context mContext = null;
     private Map<FileDescriptor, SharedMemory> fd_mem =
             new HashMap<FileDescriptor, SharedMemory>();
     private static IC2PA mFactoryAidl = null;
@@ -304,6 +307,9 @@ public class C2paUtil {
     }
 
     public C2PAStatus getC2PAStatus(C2PAData data) {
+        if(data == null){
+            return C2PAStatus.NON_C2PA;
+        }
         try {
             boolean isInvalidHash = false;
             if(data != null) {
@@ -324,4 +330,13 @@ public class C2paUtil {
             return C2PAStatus.NON_C2PA;
         }
     }
+    public static void setContext(Context context){
+        mContext = context;
+    }
+
+    public static boolean isC2paEnabled(){
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return settings.getBoolean("c2pa_option", false);
+    }
+
 }

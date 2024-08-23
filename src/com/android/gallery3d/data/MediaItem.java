@@ -158,6 +158,9 @@ public abstract class MediaItem extends MediaObject {
     }
 
     public int checkC2pa() {
+        if(!C2paUtil.isC2paEnabled()){
+            return C2PAStatus.NON_C2PA.ordinal();
+        }
         if (mC2paFlag != C2PAStatus.NON_C2PA.ordinal()) {
             return mC2paFlag;
         }

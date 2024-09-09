@@ -753,7 +753,7 @@ public class PhotoView extends GLView {
             }
             if (mHasC2paInfo == MediaItem.C2PAStatus.C2PA.ordinal()) {
                 drawC2paInfoIcon(canvas, r.width(), r.height());
-            } else {
+            } else if(mHasC2paInfo != MediaItem.C2PAStatus.NON_C2PA.ordinal()){
                 drawC2paInvalideInfoIcon(canvas, r.width(), r.height());
             }
             // Draw a debug indicator showing which picture has focus (index ==

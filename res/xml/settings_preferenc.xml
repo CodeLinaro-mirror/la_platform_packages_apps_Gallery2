@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+    SPDX-License-Identifier: BSD-3-Clause-Clear
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/settings">
+    <SwitchPreference
+        android:key="c2pa_option"
+        android:title="@string/c2pa_option_title"
+        android:persistent="true"
+        android:defaultValue="false" />
+</PreferenceScreen>

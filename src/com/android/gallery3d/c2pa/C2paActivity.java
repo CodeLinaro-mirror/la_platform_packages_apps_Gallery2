@@ -94,9 +94,9 @@ public class C2paActivity extends Activity {
         if(status == C2paUtil.C2PAStatus.C2PA) {
             Resources res = getResources();
             C2PAPresenter presenter = new C2PAPresenter(c2PAData, new C2PAPresenter.Labels(
-                    res.getString(R.string.c2pa_info_thumbnail_desc_creative_work),
-                    res.getString(R.string.c2pa_info_thumbnail_desc_original),
-                    res.getString(R.string.c2pa_info_thumbnail_desc_modified),
+                    "",
+                    "",
+                    "",
                     res.getString(R.string.c2pa_info_thumbnail_type_photo),
                     res.getString(R.string.c2pa_info_thumbnail_type_image),
                     res.getString(R.string.c2pa_info_thumbnail_type_video),
@@ -113,7 +113,6 @@ public class C2paActivity extends Activity {
                 Item item = new Item(
                         getAddress((Context) C2paActivity.this, manifestStore),
                         presenter.getThumbnail(manifestStore, 200),
-                        presenter.getDescriptor(manifestStore),
                         presenter.getType(),
                         presenter.getTypeLabel(),
                         presenter.getCapturedWith(manifestStore),
@@ -426,7 +425,6 @@ public class C2paActivity extends Activity {
                 holder.location_label.setVisibility(View.GONE);
                 holder.location_text.setVisibility(View.GONE);
             }
-            holder.thumbnail_desc.setText(item.descriptor);
             holder.thumbnail_type.setText(item.typeLabel);
             holder.captured_with_label.setText(item.capturedWithLabel);
             holder.captured_with_text.setText(item.capturedWith);
@@ -460,7 +458,6 @@ public class C2paActivity extends Activity {
 
             private TextView title;
             private ImageView thumbnail;
-            private TextView thumbnail_desc;
             private TextView thumbnail_type;
             private TextView aiwarning;
             private TextView captured_label;
@@ -482,7 +479,6 @@ public class C2paActivity extends Activity {
                 super(itemView);
                 title = itemView.findViewById(R.id.title);
                 thumbnail = itemView.findViewById(R.id.thumbnail);
-                thumbnail_desc = itemView.findViewById(R.id.thumbnail_desc);
                 thumbnail_type = itemView.findViewById(R.id.thumbnail_type);
                 aiwarning = itemView.findViewById(R.id.ai_warning);
                 captured_label = itemView.findViewById(R.id.captured_label);
@@ -505,7 +501,6 @@ public class C2paActivity extends Activity {
     private static class Item {
         String address;
         Bitmap thumbnail;
-        String descriptor;
         C2PAPresenter.Type type;
         String typeLabel;
         String capturedWith;
@@ -517,12 +512,11 @@ public class C2paActivity extends Activity {
         String signedByText;
         String signedWithText;
 
-        public Item(String address, Bitmap thumbnail, String descriptor, C2PAPresenter.Type type, String typeLabel, String capturedWith,
+        public Item(String address, Bitmap thumbnail, C2PAPresenter.Type type, String typeLabel, String capturedWith,
                     String capturedWithLabel, String capturedLabel, boolean isAiGenerated, int modifications,
                     String capturedDateText, String signedByText, String signedWithText) {
             this.address = address;
             this.thumbnail = thumbnail;
-            this.descriptor = descriptor;
             this.type = type;
             this.typeLabel = typeLabel;
             this.capturedWith = capturedWith;

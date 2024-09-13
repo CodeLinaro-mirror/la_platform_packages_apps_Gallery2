@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2024 Truepic
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package com.truepic.lensverify.data.c2padata.assertions.odometry;
+
+import com.google.gson.annotations.SerializedName;
+import com.truepic.lensverify.data.c2padata.assertions.DataInstance;
+
+import java.util.List;
+
+public class OdometryData extends DataInstance {
+
+    private List<Attitude> attitude;
+    private List<Geomagnetism> geomagnetism;
+    private List<Gravity> gravity;
+    private List<Pressure> pressure;
+    private String lens;
+
+    @SerializedName("rotation_rate")
+    private List<RotationRate> rotationRate;
+
+    @SerializedName("user_acceleration")
+    private List<UserAcceleration> userAcceleration;
+
+    public String getLens() {
+        return lens;
+    }
+
+    public List<Attitude> getAttitude() {
+        return attitude;
+    }
+
+    public List<Geomagnetism> getGeomagnetism() {
+        return geomagnetism;
+    }
+
+    public List<Gravity> getGravity() {
+        return gravity;
+    }
+
+    public List<Pressure> getPressure() {
+        return pressure;
+    }
+
+    public List<RotationRate> getRotationRate() {
+        return rotationRate;
+    }
+
+    public List<UserAcceleration> getUserAcceleration() {
+        return userAcceleration;
+    }
+}

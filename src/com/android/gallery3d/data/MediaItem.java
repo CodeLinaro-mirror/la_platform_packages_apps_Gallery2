@@ -13,15 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Copyright (c) 2024 Truepic
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+/*
+ * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
 
 package com.android.gallery3d.data;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapRegionDecoder;
 
-import com.android.gallery3d.common.ApiHelper;
 import com.android.gallery3d.ui.ScreenNail;
+import com.android.gallery3d.util.C2paUtil;
 import com.android.gallery3d.util.ThreadPool.Job;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.truepic.lensverify.data.c2padata.C2PAData;
+import com.truepic.lensverify.utils.C2PAPresenter;
 
 // MediaItem represents an image or a video item.
 public abstract class MediaItem extends MediaObject {
@@ -41,6 +73,7 @@ public abstract class MediaItem extends MediaObject {
 
     private static final int BYTESBUFFE_POOL_SIZE = 4;
     private static final int BYTESBUFFER_SIZE = 200 * 1024;
+    private static final String TAG = "MediaItem";
 
     private static int sMicrothumbnailTargetSize = 200;
     private static final BytesBufferPool sMicroThumbBufferPool =
@@ -108,6 +141,37 @@ public abstract class MediaItem extends MediaObject {
     // is implemented, you don't need to implement requestImage().
     public ScreenNail getScreenNail() {
         return null;
+    }
+
+    private int mC2paFlag = C2PA_FLAG_UNDEFINED;
+
+    public static final int C2PA_FLAG_UNDEFINED = 0;
+    public static final int C2PA_FLAG_PROTECTED = 1;
+    public static final int C2PA_FLAG_AI_EDITED = 2;
+    public static final int C2PA_FLAG_NOT_EXIST = 3;
+    public static final int C2PA_FLAG_INVALID = 4;
+
+    public enum C2PAStatus {
+        NON_C2PA,
+        C2PA,
+        C2PA_INVALID_HASH,
+        C2PA_INVALID_SIGNATURE
+    }
+
+    public int checkC2pa() {
+        if(!C2paUtil.isC2paEnabled()){
+            return C2PAStatus.NON_C2PA.ordinal();
+        }
+        if (mC2paFlag != C2PAStatus.NON_C2PA.ordinal()) {
+            return mC2paFlag;
+        }
+        C2paUtil c2paUtil = new C2paUtil(getFilePath());
+        c2paUtil.validateImage();
+        C2PAData c2PAData = c2paUtil.getImageC2paData();
+        C2paUtil.C2PAStatus status = c2paUtil.getC2PAStatus(c2PAData);
+        Log.d(TAG, "C2PA info, file path " + getFilePath() + ",status:" + status.toString());
+        mC2paFlag = status.ordinal();
+        return mC2paFlag;
     }
 
     public static int getTargetSize(int type) {

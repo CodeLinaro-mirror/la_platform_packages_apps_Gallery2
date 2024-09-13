@@ -54,23 +54,12 @@
         android:background="@drawable/thumbnail_outline"
         android:contentDescription="@string/image_thumbnail"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@id/thumbnail_desc"
+        app:layout_constraintBottom_toTopOf="@id/thumbnail_type"
         app:layout_constraintEnd_toStartOf="@id/barrier"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_barrier"
         app:layout_constraintVertical_bias="0"
         app:layout_constraintVertical_chainStyle="packed" />
-
-    <TextView
-        android:id="@+id/thumbnail_desc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/c2pa_info_thumbnail_desc_original"
-        android:textAppearance="@style/Text.Semibold"
-        app:layout_constraintBottom_toTopOf="@id/thumbnail_type"
-        app:layout_constraintEnd_toStartOf="@id/barrier"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/thumbnail" />
 
 
     <TextView
@@ -82,7 +71,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/barrier"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/thumbnail_desc" />
+        app:layout_constraintTop_toBottomOf="@id/thumbnail" />
 
 
     <androidx.constraintlayout.widget.Barrier
@@ -90,7 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="end"
-        app:constraint_referenced_ids="thumbnail,thumbnail_desc,thumbnail_type" />
+        app:constraint_referenced_ids="thumbnail,thumbnail_type" />
 
     <TextView
         android:id="@+id/ai_warning"

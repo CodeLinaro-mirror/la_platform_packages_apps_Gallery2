@@ -50,7 +50,7 @@ android_app {
     },
 
     libs: [
-        "org.apache.http.legacy",
+        "org.apache.http.legacy.stubs",
         "vendor.qti.hardware.c2pa-V1-java",
     ],
 

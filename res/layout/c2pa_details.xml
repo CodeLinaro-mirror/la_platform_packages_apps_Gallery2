@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2024 Truepic
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/default_margin_small">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin_new"
+        android:text="@string/content_history"
+        android:textAppearance="@style/Text.Semibold"
+        app:layout_constraintBottom_toTopOf="@id/title_barrier"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/title_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="title" />
+
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="@dimen/c2pa_info_thumbnail_size"
+        android:layout_height="@dimen/c2pa_info_thumbnail_size"
+        android:layout_marginTop="@dimen/default_margin_small"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/c2pa_info_thumbnail_margin"
+        android:background="@drawable/thumbnail_outline"
+        android:contentDescription="@string/image_thumbnail"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@id/thumbnail_type"
+        app:layout_constraintEnd_toStartOf="@id/barrier"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_barrier"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+
+    <TextView
+        android:id="@+id/thumbnail_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/c2pa_info_thumbnail_type_photo"
+        android:textAppearance="@style/Text.Grey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/barrier"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/thumbnail" />
+
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="thumbnail,thumbnail_type" />
+
+    <TextView
+        android:id="@+id/ai_warning"
+        style="@style/Text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin_small"
+        android:layout_marginBottom="@dimen/c2pa_info_text_margin"
+        android:background="@drawable/ai_background"
+        android:padding="@dimen/c2pa_info_text_margin"
+        android:paddingStart="@dimen/c2pa_info_text_margin_large"
+        android:text="@string/c2pa_info_ai"
+        app:layout_constraintBottom_toTopOf="@id/captured_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/title_barrier"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:id="@+id/captured_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/c2pa_info_captured"
+        android:textAppearance="@style/Text.Grey"
+        app:layout_constraintBottom_toTopOf="@id/captured_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/ai_warning"
+        app:layout_goneMarginTop="@dimen/default_margin_small" />
+
+    <TextView
+        android:id="@+id/captured_text"
+        style="@style/Text.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/c2pa_info_text_margin"
+        android:paddingBottom="@dimen/c2pa_info_text_margin"
+        android:text="@string/c2pa_info_na"
+        app:layout_constraintBottom_toTopOf="@id/location_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/captured_label" />
+
+
+    <TextView
+        android:id="@+id/location_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/c2pa_info_location"
+        android:textAppearance="@style/Text.Grey"
+        app:layout_constraintBottom_toTopOf="@id/location_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/captured_text" />
+
+    <TextView
+        android:id="@+id/location_text"
+        style="@style/Text.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/c2pa_info_text_margin"
+        android:paddingBottom="@dimen/c2pa_info_text_margin"
+        android:text="@string/c2pa_info_na"
+        app:layout_constraintBottom_toTopOf="@id/captured_with_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/location_label" />
+
+    <TextView
+        android:id="@+id/captured_with_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/c2pa_info_captured_with"
+        android:textAppearance="@style/Text.Grey"
+        app:layout_constraintBottom_toTopOf="@id/captured_with_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/location_text" />
+
+    <TextView
+        android:id="@+id/captured_with_text"
+        style="@style/Text.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/c2pa_info_text_margin"
+        android:paddingBottom="@dimen/c2pa_info_text_margin"
+        android:text="@string/c2pa_info_na"
+        app:layout_constraintBottom_toTopOf="@id/modifications_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/captured_with_label" />
+
+    <TextView
+        android:id="@+id/modifications_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/c2pa_info_modifications"
+        android:textAppearance="@style/Text.Grey"
+        app:layout_constraintBottom_toTopOf="@id/modifications_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/captured_with_text" />
+
+    <TextView
+        android:id="@+id/modifications_text"
+        style="@style/Text.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/c2pa_info_text_margin"
+        android:paddingBottom="@dimen/c2pa_info_text_margin"
+        android:text="@string/c2pa_info_na"
+        app:layout_constraintBottom_toTopOf="@id/signed_by_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/modifications_label" />
+
+    <TextView
+        android:id="@+id/signed_by_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/c2pa_info_signed_by"
+        android:textAppearance="@style/Text.Grey"
+        app:layout_constraintBottom_toTopOf="@id/signed_by_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/modifications_text" />
+
+    <TextView
+        android:id="@+id/signed_by_text"
+        style="@style/Text.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/c2pa_info_text_margin"
+        android:paddingBottom="@dimen/c2pa_info_text_margin"
+        android:text="@string/c2pa_info_na"
+        app:layout_constraintBottom_toTopOf="@id/signed_with_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/signed_by_label" />
+
+    <TextView
+        android:id="@+id/signed_with_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/c2pa_info_signed_with"
+        android:textAppearance="@style/Text.Grey"
+        app:layout_constraintBottom_toTopOf="@id/signed_with_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/signed_by_text" />
+
+    <TextView
+        android:id="@+id/signed_with_text"
+        style="@style/Text.Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/default_margin_small"
+        android:text="@string/c2pa_info_na"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toBottomOf="@id/signed_with_label" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/lensWhite"
+        android:indeterminateTint="@color/lensGrey"
+        android:padding="@dimen/c2pa_info_progress_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

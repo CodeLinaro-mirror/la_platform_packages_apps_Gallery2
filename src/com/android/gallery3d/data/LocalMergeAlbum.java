@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
- * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause-Clear
- */
 
 package com.android.gallery3d.data;
 
@@ -41,7 +36,7 @@ import java.util.TreeMap;
 public class LocalMergeAlbum extends MediaSet implements ContentListener {
     @SuppressWarnings("unused")
     private static final String TAG = "LocalMergeAlbum";
-    private static final int PAGE_SIZE = 1000;
+    private static final int PAGE_SIZE = 64;
 
     private final Comparator<MediaItem> mComparator;
     private final MediaSet[] mSources;

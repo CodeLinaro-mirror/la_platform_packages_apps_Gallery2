@@ -38,63 +38,28 @@ public abstract class BaseFiltersManager implements FiltersManagerInterface {
     protected ArrayList<FilterRepresentation> mEffects = new ArrayList<FilterRepresentation>();
     private static int mImageBorderSize = 4; // in percent
 
-    private void addList(Object filterInstance, Class className){
-        if (filterInstance instanceof ImageFilter) {
-            mFilters.put(className, (ImageFilter) filterInstance);
-
-            FilterRepresentation rep =
-                    ((ImageFilter) filterInstance).getDefaultRepresentation();
-            if (rep != null) {
-                addRepresentation(rep);
-            }
-        }
-    }
     protected void init() {
         mFilters = new HashMap<Class, ImageFilter>();
         mRepresentationLookup = new HashMap<String, FilterRepresentation>();
-        try {
-            Object filterInstance = ImageFilterTinyPlanet.class.newInstance();
-            addList(filterInstance, ImageFilterTinyPlanet.class);
-            filterInstance = ImageFilterRedEye.class.newInstance();
-            addList(filterInstance, ImageFilterRedEye.class);
-            filterInstance = ImageFilterWBalance.class.newInstance();
-            addList(filterInstance, ImageFilterWBalance.class);
-            filterInstance = ImageFilterExposure.class.newInstance();
-            addList(filterInstance, ImageFilterExposure.class);
-            filterInstance = ImageFilterContrast.class.newInstance();
-            addList(filterInstance, ImageFilterContrast.class);
-            filterInstance = ImageFilterShadows.class.newInstance();
-            addList(filterInstance, ImageFilterShadows.class);
-            filterInstance = ImageFilterHighlights.class.newInstance();
-            addList(filterInstance, ImageFilterHighlights.class);
-            filterInstance = ImageFilterVibrance.class.newInstance();
-            addList(filterInstance, ImageFilterVibrance.class);
-            filterInstance = ImageFilterCurves.class.newInstance();
-            addList(filterInstance, ImageFilterCurves.class);
-            filterInstance = ImageFilterDraw.class.newInstance();
-            addList(filterInstance, ImageFilterDraw.class);
-            filterInstance = ImageFilterHue.class.newInstance();
-            addList(filterInstance, ImageFilterHue.class);
-            filterInstance = ImageFilterSaturated.class.newInstance();
-            addList(filterInstance, ImageFilterSaturated.class);
-            filterInstance = ImageFilterBwFilter.class.newInstance();
-            addList(filterInstance, ImageFilterBwFilter.class);
-            filterInstance = ImageFilterNegative.class.newInstance();
-            addList(filterInstance, ImageFilterNegative.class);
-            filterInstance = ImageFilterEdge.class.newInstance();
-            addList(filterInstance, ImageFilterEdge.class);
-            filterInstance = ImageFilterKMeans.class.newInstance();
-            addList(filterInstance, ImageFilterKMeans.class);
-            filterInstance = ImageFilterFx.class.newInstance();
-            addList(filterInstance, ImageFilterFx.class);
-            filterInstance = ImageFilterBorder.class.newInstance();
-            addList(filterInstance, ImageFilterBorder.class);
-            filterInstance = ImageFilterColorBorder.class.newInstance();
-            addList(filterInstance, ImageFilterColorBorder.class);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        Vector<Class> filters = new Vector<Class>();
+        addFilterClasses(filters);
+        for (Class filterClass : filters) {
+            try {
+                Object filterInstance = filterClass.newInstance();
+                if (filterInstance instanceof ImageFilter) {
+                    mFilters.put(filterClass, (ImageFilter) filterInstance);
+
+                    FilterRepresentation rep =
+                        ((ImageFilter) filterInstance).getDefaultRepresentation();
+                    if (rep != null) {
+                        addRepresentation(rep);
+                    }
+                }
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -140,6 +105,28 @@ public abstract class BaseFiltersManager implements FiltersManagerInterface {
                 filter.freeResources();
             }
         }
+    }
+
+    protected void addFilterClasses(Vector<Class> filters) {
+        filters.add(ImageFilterTinyPlanet.class);
+        filters.add(ImageFilterRedEye.class);
+        filters.add(ImageFilterWBalance.class);
+        filters.add(ImageFilterExposure.class);
+        filters.add(ImageFilterContrast.class);
+        filters.add(ImageFilterShadows.class);
+        filters.add(ImageFilterHighlights.class);
+        filters.add(ImageFilterVibrance.class);
+        filters.add(ImageFilterCurves.class);
+        filters.add(ImageFilterDraw.class);
+        filters.add(ImageFilterHue.class);
+        filters.add(ImageFilterSaturated.class);
+        filters.add(ImageFilterBwFilter.class);
+        filters.add(ImageFilterNegative.class);
+        filters.add(ImageFilterEdge.class);
+        filters.add(ImageFilterKMeans.class);
+        filters.add(ImageFilterFx.class);
+        filters.add(ImageFilterBorder.class);
+        filters.add(ImageFilterColorBorder.class);
     }
 
     public ArrayList<FilterRepresentation> getLooks() {

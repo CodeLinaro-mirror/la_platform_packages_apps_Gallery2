@@ -3,12 +3,11 @@
 <manifest android:versionCode="40030"
         android:versionName="1.1.40030"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         package="com.android.gallery3d">
 
     <original-package android:name="com.android.gallery3d" />
 
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="33" />
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="28" />
 
     <permission android:name="com.android.gallery3d.permission.GALLERY_PROVIDER"
             android:protectionLevel="signatureOrSystem" />
@@ -34,16 +33,6 @@
     <uses-permission android:name="com.android.gallery3d.permission.GALLERY_PROVIDER" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_IMAGES" />
-
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_VIDEO" />
-
     <supports-screens android:smallScreens="false"
             android:normalScreens="true" android:largeScreens="true"
             android:anyDensity="true" />
@@ -57,12 +46,9 @@
             android:restoreAnyVersion="true"
             android:supportsRtl="true"
             android:requestLegacyExternalStorage="true"
-            usesCleartextHttp="true"
-            tools:replace="android:appComponentFactory"
-            android:appComponentFactory="android.support.v4.app.CoreComponentFactory">
+            usesCleartextHttp="true">
         <uses-library android:name="com.google.android.media.effects" android:required="false" />
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
-        <uses-library android:name="vendor.qti.hardware.c2pa-V1-java"/>
         <activity android:name="com.android.gallery3d.app.MovieActivity"
                 android:label="@string/movie_view_label"
                 android:exported="true"
@@ -314,11 +300,6 @@
         <activity android:name="com.android.gallery3d.settings.GallerySettings"
                 android:theme="@style/Theme.Gallery"
                 android:configChanges="orientation|keyboardHidden|screenSize" />
-
-        <activity android:name=".c2pa.C2paActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true"
-            android:theme="@style/Theme.C2pa" />
 
         <provider android:name="com.android.gallery3d.provider.GalleryProvider"
                 android:syncable="false"

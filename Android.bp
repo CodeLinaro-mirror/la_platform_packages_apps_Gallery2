@@ -13,19 +13,16 @@ android_app {
         "com.android.gallery3d.common2",
         "xmp_toolkit",
         "mp4parser",
-        "androidx-constraintlayout_constraintlayout",
-        "gson",
-        "android-support-v7-recyclerview",
-        "androidx.recyclerview_recyclerview",
     ],
 
     srcs: [
         "src/**/*.java",
         "src_pd/**/*.java",
-        "src/**/*.kt",
     ],
 
     resource_dirs: ["res"],
+
+    product_specific: true,
 
     overrides: [
         "Gallery",
@@ -33,11 +30,9 @@ android_app {
         "GalleryNew3D",
     ],
 
-    use_embedded_native_libs: true,
-    system_ext_specific: true,
-    platform_apis: true,
+    sdk_version: "current",
 
-    target_sdk_version: "33",
+    target_sdk_version: "28",
 
     jni_libs: [
         "libjni_eglfence",
@@ -49,10 +44,7 @@ android_app {
         proguard_flags_files: ["proguard.flags"],
     },
 
-    libs: [
-        "org.apache.http.legacy.stubs",
-        "vendor.qti.hardware.c2pa-V1-java",
-    ],
+    libs: ["org.apache.http.legacy.stubs"],
 
     optional_uses_libs: [
         "com.google.android.media.effects",
@@ -60,5 +52,4 @@ android_app {
     ],
 
     jarjar_rules: "jarjar-rules.txt",
-    privileged: true,
 }

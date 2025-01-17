@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
- * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause-Clear
- */
 
 package com.android.gallery3d.ui;
 
@@ -36,7 +31,6 @@ import com.android.gallery3d.glrenderer.TiledTexture;
 import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.FutureListener;
 import com.android.gallery3d.util.JobLimiter;
-import com.android.gallery3d.util.ThreadPool;
 
 public class AlbumSlidingWindow implements AlbumDataLoader.DataListener {
     @SuppressWarnings("unused")
@@ -54,8 +48,6 @@ public class AlbumSlidingWindow implements AlbumDataLoader.DataListener {
         public MediaItem item;
         public Path path;
         public boolean isPanorama;
-        public int hasC2pa;
-        public boolean isAiEdited;
         public int rotation;
         public int mediaType;
         public boolean isWaitDisplayed;
@@ -278,16 +270,6 @@ public class AlbumSlidingWindow implements AlbumDataLoader.DataListener {
         entry.path = (item == null) ? null : item.getPath();
         entry.rotation = (item == null) ? 0 : item.getRotation();
         entry.contentLoader = new ThumbnailLoader(slotIndex, entry.item);
-        mThreadPool.submit((ThreadPool.Job<Void>) jc -> {
-            entry.hasC2pa = (item == null) ? 0 : item.checkC2pa();
-            return null;
-        }, new FutureListener<Void>() {
-            @Override
-            public void onFutureDone(Future<Void> future) {
-                mListener.onContentChanged();
-            }
-        });
-
         mData[slotIndex % mData.length] = entry;
     }
 

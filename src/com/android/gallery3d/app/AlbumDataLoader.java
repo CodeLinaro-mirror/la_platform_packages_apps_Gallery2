@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
- * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause-Clear
- */
 
 package com.android.gallery3d.app;
 
@@ -49,7 +44,7 @@ public class AlbumDataLoader {
     private static final int MSG_RUN_OBJECT = 3;
 
     private static final int MIN_LOAD_COUNT = 32;
-    private static final int MAX_LOAD_COUNT = 1000;
+    private static final int MAX_LOAD_COUNT = 64;
 
     private final MediaItem[] mData;
     private final long[] mItemVersion;

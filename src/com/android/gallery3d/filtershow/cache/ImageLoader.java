@@ -53,7 +53,6 @@ public final class ImageLoader {
     private static final String LOGTAG = "ImageLoader";
 
     public static final String JPEG_MIME_TYPE = "image/jpeg";
-    public static final String HEIC_MIME_TYPE = "image/heic";
     public static final int DEFAULT_COMPRESS_QUALITY = 95;
 
     public static final int ORI_NORMAL = ExifInterface.Orientation.TOP_LEFT;
@@ -136,12 +135,7 @@ public final class ImageLoader {
         try {
             if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
                 String mimeType = getMimeType(uri);
-                if (HEIC_MIME_TYPE.equals(mimeType)) {
-                    is = context.getContentResolver().openInputStream(uri);
-                    android.media.ExifInterface ei = new android.media.ExifInterface(is);
-                    String tag = android.media.ExifInterface.TAG_ORIENTATION;
-                    return ei.getAttributeInt(tag, 0);
-                } else if (!JPEG_MIME_TYPE.equals(mimeType)){
+                if (!JPEG_MIME_TYPE.equals(mimeType)) {
                     return ORI_NORMAL;
                 }
                 String path = uri.getPath();

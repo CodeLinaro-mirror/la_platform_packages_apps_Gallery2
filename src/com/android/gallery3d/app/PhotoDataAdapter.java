@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
- * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause-Clear
- */
 
 package com.android.gallery3d.app;
 
@@ -601,15 +596,6 @@ public class PhotoDataAdapter implements PhotoPage.Model {
     @Override
     public void setFocusHintPath(Path path) {
         mFocusHintPath = path;
-    }
-
-    @Override
-    public int hasC2paInfo(int offset) {
-        MediaItem item = getItem(mCurrentIndex + offset);
-        if (item == null) {
-            return MediaItem.C2PA_FLAG_NOT_EXIST;
-        }
-        return item.checkC2pa();
     }
 
     private void updateTileProvider() {

@@ -946,7 +946,10 @@ public abstract class PhotoPage extends ActivityState implements
         public void onProgressUpdate(int index) {}
 
         @Override
-        public void onProgressComplete(int result) {}
+        public void onProgressComplete(int result) {
+            MediaItem current = mModel.getMediaItem(0);
+            mModel.setCurrentPhoto(Path.fromString(current.getFilePath()), 0);
+        }
 
         @Override
         public void onConfirmDialogShown() {

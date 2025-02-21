@@ -28,18 +28,19 @@ import android.graphics.Rect;
 
 public class Util {
 
-    private static Rect getUpdatedBounds(BitmapFactory.Options options, int size) {
-        int width, height;
-        if (options.outWidth > options.outHeight)
-        {
-            width = size;
-            height = width * options.outHeight / options.outWidth;
-        }
-        else {
-            height = size;
-            width = height * options.outWidth / options.outHeight;
-        }
-        return new Rect(0, 0, width, height);
+    /**
+     * Scales bitmap according to the max size using sampling (more memory efficient)
+     * @param bitmap to be scaled
+     * @param maxSize maximum size of the longer edge
+     * @return scaled bitmap
+     */
+    public static Bitmap getScaledBitmapFromBuffer(byte[] bitmap, int maxSize, int rotation) {
+        Bitmap sampled = getSampledBitmap(bitmap, maxSize);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotation);
+        Bitmap resized = Bitmap.createBitmap(sampled, 0, 0, sampled.getWidth(), sampled.getHeight(), matrix, true);
+        sampled.recycle();
+        return resized;
     }
 
     /**
@@ -60,21 +61,19 @@ public class Util {
         return Bitmap.createScaledBitmap( bitmap, bounds.width(), bounds.height(), true);
     }
 
-    /**
-     * Scales bitmap according to the max size using sampling (more memory efficient)
-     * @param bitmap to be scaled
-     * @param maxSize maximum size of the longer edge
-     * @return scaled bitmap
-     */
-    public static Bitmap getScaledBitmapFromBuffer(byte[] bitmap, int maxSize, int rotation) {
-        Bitmap sampled = getSampledBitmap(bitmap, maxSize);
-        Matrix matrix = new Matrix();
-        matrix.postRotate(rotation);
-        Bitmap resized = Bitmap.createBitmap(sampled, 0, 0, sampled.getWidth(), sampled.getHeight(), matrix, true);
-        sampled.recycle();
-        return resized;
+    private static Rect getUpdatedBounds(BitmapFactory.Options options, int size) {
+        int width, height;
+        if (options.outWidth > options.outHeight)
+        {
+            width = size;
+            height = width * options.outHeight / options.outWidth;
+        }
+        else {
+            height = size;
+            width = height * options.outWidth / options.outHeight;
+        }
+        return new Rect(0, 0, width, height);
     }
-
 
     public static int getDegreesFromExifOrientation(int orientation) {
         switch (orientation) {
@@ -94,5 +93,4 @@ public class Util {
                 return 0;
         }
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Truepic
+ * Copyright (c) 2025 Truepic
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,14 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.truepic.lensverify.data.c2padata;
+package com.truepic.lensverify.data.c2padata.assertions.metadata;
 
 import com.google.gson.annotations.SerializedName;
+import com.truepic.lensverify.data.c2padata.assertions.DataInstance;
 
-public class AIStatus {
-    @SerializedName("contains_ai")
-    public boolean containsAI;
+public class Metadata extends DataInstance {
+    @SerializedName("data")
+    private MetadataDetails data;
+    @SerializedName("truepic_id")
+    private String truepicId;
 
-    @SerializedName("is_ai_generated")
-    public boolean isAIGenerated;
+    public MetadataDetails getData() {
+        return data;
+    }
+
+    public String getTruepicId() {
+        return truepicId;
+    }
+
 }

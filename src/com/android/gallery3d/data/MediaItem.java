@@ -166,8 +166,7 @@ public abstract class MediaItem extends MediaObject {
         }
         C2paUtil c2paUtil = new C2paUtil(getFilePath());
         c2paUtil.validateImage();
-        C2PAData c2PAData = c2paUtil.getImageC2paData();
-        C2paUtil.C2PAStatus status = c2paUtil.getC2PAStatus(c2PAData);
+        C2paUtil.C2PAStatus status = c2paUtil.getC2PAStatus();
         Log.d(TAG, "C2PA info, file path " + getFilePath() + ",status:" + status.toString());
         mC2paFlag = status.ordinal();
         return mC2paFlag;

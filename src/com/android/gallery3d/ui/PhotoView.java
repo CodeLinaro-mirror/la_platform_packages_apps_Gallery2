@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
 
 package com.android.gallery3d.ui;
 
@@ -39,6 +44,7 @@ import com.android.gallery3d.glrenderer.RawTexture;
 import com.android.gallery3d.glrenderer.ResourceTexture;
 import com.android.gallery3d.glrenderer.StringTexture;
 import com.android.gallery3d.glrenderer.Texture;
+import com.android.gallery3d.glrenderer.VectorResourceTexture;
 import com.android.gallery3d.util.GalleryUtils;
 import com.android.gallery3d.util.RangeArray;
 import com.android.gallery3d.util.UsageStatistics;
@@ -117,6 +123,7 @@ public class PhotoView extends GLView {
         public static final int FOCUS_HINT_PREVIOUS = 1;
         public void setFocusHintDirection(int direction);
         public void setFocusHintPath(Path path);
+        int hasC2paInfo(int offset);
     }
 
     public interface Listener {
@@ -200,6 +207,9 @@ public class PhotoView extends GLView {
     private EdgeView mEdgeView;
     private UndoBarView mUndoBar;
     private Texture mVideoPlayIcon;
+
+    private Texture mC2paIcon;
+    private Texture mC2paInvalidIcon;
 
     private SynchronizedHandler mHandler;
 
@@ -310,6 +320,9 @@ public class PhotoView extends GLView {
                 mPictures.put(i, new ScreenNailPicture(i));
             }
         }
+
+        mC2paIcon = new VectorResourceTexture(mContext, R.drawable.ic_c2pa_new);
+        mC2paInvalidIcon = new VectorResourceTexture(mContext, R.drawable.ic_c2pa_invalid_new);
     }
 
     public void stopScrolling() {
@@ -594,6 +607,8 @@ public class PhotoView extends GLView {
         private boolean mIsPanorama;
         private boolean mIsStaticCamera;
         private boolean mIsVideo;
+
+        private int mHasC2paInfo;
         private boolean mIsDeletable;
         private int mLoadingState = Model.LOADING_INIT;
         private Size mSize = new Size();
@@ -607,6 +622,7 @@ public class PhotoView extends GLView {
             mIsPanorama = mModel.isPanorama(0);
             mIsStaticCamera = mModel.isStaticCamera(0);
             mIsVideo = mModel.isVideo(0);
+            mHasC2paInfo = mModel.hasC2paInfo(0);
             mIsDeletable = mModel.isDeletable(0);
             mLoadingState = mModel.getLoadingState(0);
             setScreenNail(mModel.getScreenNail(0));
@@ -735,7 +751,11 @@ public class PhotoView extends GLView {
             if (mLoadingState == Model.LOADING_FAIL) {
                 drawLoadingFailMessage(canvas);
             }
-
+            if (mHasC2paInfo == MediaItem.C2PAStatus.C2PA.ordinal()) {
+                drawC2paInfoIcon(canvas, r.width(), r.height());
+            } else if(mHasC2paInfo != MediaItem.C2PAStatus.NON_C2PA.ordinal()){
+                drawC2paInvalideInfoIcon(canvas, r.width(), r.height());
+            }
             // Draw a debug indicator showing which picture has focus (index ==
             // 0).
             //canvas.fillRect(-10, -10, 20, 20, 0x80FF00FF);
@@ -775,6 +795,8 @@ public class PhotoView extends GLView {
         private boolean mIsPanorama;
         private boolean mIsStaticCamera;
         private boolean mIsVideo;
+
+        private int mHasC2paInfo;
         private boolean mIsDeletable;
         private int mLoadingState = Model.LOADING_INIT;
         private Size mSize = new Size();
@@ -789,6 +811,7 @@ public class PhotoView extends GLView {
             mIsPanorama = mModel.isPanorama(mIndex);
             mIsStaticCamera = mModel.isStaticCamera(mIndex);
             mIsVideo = mModel.isVideo(mIndex);
+            mHasC2paInfo = mModel.hasC2paInfo(mIndex);
             mIsDeletable = mModel.isDeletable(mIndex);
             mLoadingState = mModel.getLoadingState(mIndex);
             setScreenNail(mModel.getScreenNail(mIndex));
@@ -856,6 +879,11 @@ public class PhotoView extends GLView {
             if (mLoadingState == Model.LOADING_FAIL) {
                 drawLoadingFailMessage(canvas);
             }
+            if (mHasC2paInfo == MediaItem.C2PAStatus.C2PA.ordinal()) {
+                drawC2paInfoIcon(canvas, r.width(), r.height());
+            } else {
+                drawC2paInvalideInfoIcon(canvas, r.width(), r.height());
+            }
             canvas.restore();
         }
 
@@ -922,6 +950,20 @@ public class PhotoView extends GLView {
         mVideoPlayIcon.draw(canvas, -s / 2, -s / 2, s, s);
     }
 
+    private void drawC2paInfoIcon(GLCanvas canvas, int sideX, int sideY) {
+        int w = GalleryUtils.dpToPixel(20);
+        int h = GalleryUtils.dpToPixel(20);
+        int paddingRight = GalleryUtils.dpToPixel(10) + w;
+        int paddingTop =  GalleryUtils.dpToPixel(10);
+        mC2paIcon.draw(canvas, sideX / 2 - paddingRight, -sideY / 2 + paddingTop, w, h);
+    }
+    private void drawC2paInvalideInfoIcon(GLCanvas canvas, int sideX, int sideY) {
+        int w = GalleryUtils.dpToPixel(20);
+        int h = GalleryUtils.dpToPixel(20);
+        int paddingRight = GalleryUtils.dpToPixel(10) + w;
+        int paddingTop =  GalleryUtils.dpToPixel(10);
+        mC2paInvalidIcon.draw(canvas, sideX / 2 - paddingRight, -sideY / 2 + paddingTop, w, h);
+    }
     // Draw the "no thumbnail" message
     private void drawLoadingFailMessage(GLCanvas canvas) {
         StringTexture m = mNoThumbnailText;

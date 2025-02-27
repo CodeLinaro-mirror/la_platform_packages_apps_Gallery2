@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
 
 package com.android.gallery3d.app;
 
@@ -38,12 +43,12 @@ import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.android.gallery3d.R;
+import com.android.gallery3d.c2pa.C2paActivity;
 import com.android.gallery3d.common.ApiHelper;
 import com.android.gallery3d.data.ComboAlbum;
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.FilterDeleteSet;
 import com.android.gallery3d.data.FilterSource;
-import com.android.gallery3d.data.LocalImage;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaObject;
@@ -98,6 +103,8 @@ public abstract class PhotoPage extends ActivityState implements
     private static final int REQUEST_EDIT = 4;
     private static final int REQUEST_PLAY_VIDEO = 5;
     private static final int REQUEST_TRIM = 6;
+
+    private static final int REQUEST_SHOW_C2PA_INFO = 7;
 
     public static final String KEY_MEDIA_SET_PATH = "media-set-path";
     public static final String KEY_MEDIA_ITEM_PATH = "media-item-path";
@@ -648,6 +655,14 @@ public abstract class PhotoPage extends ActivityState implements
         GalleryUtils.startCameraActivity(mActivity);
     }
 
+    private void launchC2paInfo(String filePath) {
+        Intent intent = new Intent();
+        intent.setClass(mActivity, C2paActivity.class);
+        intent.putExtra(C2paActivity.FILE_PATH,filePath);
+        mActivity.startActivityForResult(intent, REQUEST_SHOW_C2PA_INFO);
+        overrideTransitionToEditor();
+    }
+
     private void launchPhotoEditor() {
         MediaItem current = mModel.getMediaItem(0);
         if (current == null || (current.getSupportedOperations()
@@ -1127,6 +1142,18 @@ public abstract class PhotoPage extends ActivityState implements
                 && (Math.abs(y - h / 2) * 12 <= h);
         }
 
+        int hasC2paInfo = mModel.hasC2paInfo(0);
+        boolean showC2paInfo = hasC2paInfo != MediaItem.C2PAStatus.NON_C2PA.ordinal();
+        if (showC2paInfo) {
+            int w = mPhotoView.getWidth();
+            int h = mPhotoView.getHeight();
+            Rect rect = mPhotoView.getPhotoRect(0);
+            int iconCX = w - GalleryUtils.dpToPixel(20);
+            int iconCY = GalleryUtils.dpToPixel(20);
+            showC2paInfo = (Math.abs(x - rect.left - iconCX) <= GalleryUtils.dpToPixel(30))
+                    && (Math.abs(y - rect.top - iconCY) <= GalleryUtils.dpToPixel(30));
+        }
+
         if (playVideo) {
             if (mSecureAlbum == null) {
                 playVideo(mActivity, item.getPlayUri(), item.getName());
@@ -1141,6 +1168,8 @@ public abstract class PhotoPage extends ActivityState implements
             mActivity.startActivity(intent);
         } else if (launchCamera) {
             launchCamera();
+        } else if (showC2paInfo) {
+            launchC2paInfo(item.getFilePath());
         } else {
             toggleBars();
         }

@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause-Clear
+ */
 
 package com.android.gallery3d.ui;
 
@@ -25,6 +30,8 @@ import com.android.gallery3d.glrenderer.GLCanvas;
 import com.android.gallery3d.glrenderer.NinePatchTexture;
 import com.android.gallery3d.glrenderer.ResourceTexture;
 import com.android.gallery3d.glrenderer.Texture;
+import com.android.gallery3d.glrenderer.VectorResourceTexture;
+import com.android.gallery3d.util.GalleryUtils;
 
 public abstract class AbstractSlotRenderer implements SlotView.SlotRenderer {
 
@@ -35,12 +42,17 @@ public abstract class AbstractSlotRenderer implements SlotView.SlotRenderer {
     private final NinePatchTexture mFrameSelected;
     private FadeOutTexture mFramePressedUp;
 
+    private final VectorResourceTexture mC2paInfoIcon;
+    private final VectorResourceTexture mC2paInvalidIcon;
+
     protected AbstractSlotRenderer(Context context) {
         mVideoOverlay = new ResourceTexture(context, R.drawable.ic_video_thumb);
         mVideoPlayIcon = new ResourceTexture(context, R.drawable.ic_gallery_play);
         mPanoramaIcon = new ResourceTexture(context, R.drawable.ic_360pano_holo_light);
         mFramePressed = new NinePatchTexture(context, R.drawable.grid_pressed);
         mFrameSelected = new NinePatchTexture(context, R.drawable.grid_selected);
+        mC2paInfoIcon = new VectorResourceTexture(context, R.drawable.ic_c2pa_new);
+        mC2paInvalidIcon = new VectorResourceTexture(context, R.drawable.ic_c2pa_invalid_new);
     }
 
     protected void drawContent(GLCanvas canvas,
@@ -85,6 +97,18 @@ public abstract class AbstractSlotRenderer implements SlotView.SlotRenderer {
                 iconSize, iconSize);
     }
 
+    protected void drawC2paInfoIcon(GLCanvas canvas, int width, int height) {
+        int iconSize = GalleryUtils.dpToPixel(20);
+        int iconSize_ = iconSize;
+        mC2paInfoIcon.draw(canvas, width - iconSize * 3 / 2, iconSize / 2,
+                iconSize, iconSize_);
+    }
+    protected void drawC2paInvalideInfoIcon(GLCanvas canvas, int width, int height) {
+        int iconSize = GalleryUtils.dpToPixel(20);
+        int iconSize_ = iconSize;
+        mC2paInvalidIcon.draw(canvas, width - iconSize * 3 / 2, iconSize / 2,
+                iconSize, iconSize_);
+    }
     protected boolean isPressedUpFrameFinished() {
         if (mFramePressedUp != null) {
             if (mFramePressedUp.isAnimating()) {

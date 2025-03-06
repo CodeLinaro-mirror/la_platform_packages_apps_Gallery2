@@ -130,6 +130,17 @@ public class LocalImage extends LocalMediaItem {
         }
     }
 
+    public int getOrientation(){
+        ExifInterface exif = new ExifInterface();
+        try {
+            exif.readExif(filePath);
+        } catch (FileNotFoundException e) {
+            Log.w(TAG, "Could not find file to read exif: " + filePath, e);
+        } catch (IOException e) {
+            Log.w(TAG, "Could not read exif from file: " + filePath, e);
+        }
+        return Exif.getOrientation(exif);
+    }
     private void loadFromCursor(Cursor cursor) {
         id = cursor.getInt(INDEX_ID);
         caption = cursor.getString(INDEX_CAPTION);
@@ -140,7 +151,7 @@ public class LocalImage extends LocalMediaItem {
         dateAddedInSec = cursor.getLong(INDEX_DATE_ADDED);
         dateModifiedInSec = cursor.getLong(INDEX_DATE_MODIFIED);
         filePath = cursor.getString(INDEX_DATA);
-        rotation = cursor.getInt(INDEX_ORIENTATION);
+        rotation = getOrientation();
         bucketId = cursor.getInt(INDEX_BUCKET_ID);
         fileSize = cursor.getLong(INDEX_SIZE);
         width = cursor.getInt(INDEX_WIDTH);
@@ -162,7 +173,7 @@ public class LocalImage extends LocalMediaItem {
         dateModifiedInSec = uh.update(
                 dateModifiedInSec, cursor.getLong(INDEX_DATE_MODIFIED));
         filePath = uh.update(filePath, cursor.getString(INDEX_DATA));
-        rotation = uh.update(rotation, cursor.getInt(INDEX_ORIENTATION));
+        rotation = uh.update(rotation, getOrientation());
         bucketId = uh.update(bucketId, cursor.getInt(INDEX_BUCKET_ID));
         fileSize = uh.update(fileSize, cursor.getLong(INDEX_SIZE));
         width = uh.update(width, cursor.getInt(INDEX_WIDTH));

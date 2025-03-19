@@ -13,7 +13,25 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+<!-- Copyright (c) 2024 Truepic
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
 
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+-->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <style name="Theme.GalleryBase" parent="android:Theme.Holo">
         <item name="listPreferredItemHeightSmall">48dp</item>
@@ -68,6 +86,7 @@
         <item name="android:colorBackgroundCacheHint">@android:color/black</item>
     </style>
     <style name="Theme.CameraBase" parent="android:Theme.Black.NoTitleBar.Fullscreen"/>
+    <style name="Theme.C2pa" parent="android:Theme.Light.NoTitleBar.Fullscreen"/>
     <style name="OnScreenHintTextAppearance">
         <item name="android:textColor">@android:color/primary_text_dark</item>
         <item name="android:textColorHighlight">#FFFF9200</item>
@@ -296,5 +315,60 @@
         <item name="android:textColor">@color/gray</item>
         <item name="android:drawablePadding">8dp</item>
         <item name="android:background">@drawable/bg_pressed</item>
+    </style>
+
+    <style name="Text">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/lensGrey900</item>
+    </style>
+
+    <style name="Text.Semibold" parent="Text">
+    </style>
+
+    <style name="Text.Medium" parent="Text">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Text.Medium.Grey600" parent="Text.Medium">
+        <item name="android:lineSpacingMultiplier">1.1</item>
+        <item name="android:textColor">@color/lensGrey600</item>
+    </style>
+
+    <style name="Text.Medium.Semibold" parent="Text.Medium">
+        <item name="android:textColor">@color/lensGrey900</item>
+    </style>
+
+    <style name="Text.TabMode">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="Text.Grey" parent="Text">
+        <item name="android:textColor">@color/lensGrey600</item>
+    </style>
+
+    <style name="Header1">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@color/lensGrey900</item>
+    </style>
+
+    <style name="Header2">
+        <item name="android:textColor">@color/lensGrey900</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Header3">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/lensGrey900</item>
+    </style>
+
+    <style name="Header3.Semibold" parent="Header3">
+    </style>
+
+    <style name="Header3.Light" parent="Header3">
+        <item name="android:textColor">@color/lensGrey600</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 </resources>

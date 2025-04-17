@@ -17,6 +17,7 @@ android_app {
         "gson",
         "android-support-v7-recyclerview",
         "androidx.recyclerview_recyclerview",
+        "androidx.exifinterface_exifinterface",
     ],
 
     srcs: [

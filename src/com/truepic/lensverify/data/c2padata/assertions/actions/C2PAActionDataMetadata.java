@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Truepic
+ * Copyright (c) 2025 Truepic
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,20 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.truepic.lensverify.data.c2padata;
+package com.truepic.lensverify.data.c2padata.assertions.actions;
 
-import com.google.gson.annotations.SerializedName;
+public class C2PAActionDataMetadata {
 
-public class ValidationStatus {
-    @SerializedName("code")
-    public String code;
+    private String dateTime;
 
-    @SerializedName("URI")
-    public String URI;
-
-    @SerializedName("explanation")
-    public String explanation;
-
-    @SerializedName("success")
-    public boolean success;
+    public String getDateTime() {
+        return dateTime;
+    }
 }

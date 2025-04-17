@@ -29,22 +29,17 @@ package com.android.gallery3d.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.hardware.HardwareBuffer;
 import android.hardware.common.Ashmem;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.ServiceManager;
 import android.os.SharedMemory;
 import android.preference.PreferenceManager;
-import android.system.ErrnoException;
-import android.system.OsConstants;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +52,6 @@ import vendor.qti.hardware.c2pa.IC2PA;
 
 import com.truepic.lensverify.data.c2padata.C2PAData;
 import com.google.gson.Gson;
-import com.truepic.lensverify.data.c2padata.ManifestStore;
-import com.truepic.lensverify.data.c2padata.ValidationStatus;
 
 public class C2paUtil {
     private static final String TAG = "C2paUtil";
@@ -70,6 +63,7 @@ public class C2paUtil {
     private static IC2PA mFactoryAidl = null;
     private String mJsonResult;
     private Map<String, byte[]> mThumbnails = new HashMap<>();
+    private C2PAStatus mStatus;
 
     String mFilePath;
     public C2paUtil(String filePath) {
@@ -164,7 +158,7 @@ public class C2paUtil {
                         for (int iter3 = 0; iter3 < thumbnailLabel.length && iter < outputParams.size(); iter3++) {
                             label = thumbnailLabel[iter3] + iter2;
                             Log.i(TAG,"label:" + label + ",key:" + outputParams.get(iter).key + ",iter:" + iter);
-                            if(outputParams.get(iter).key.equals(thumbnailLabel[2] + iter2)){
+                            if(outputParams.get(iter).key.equals(thumbnailLabel[1] + iter2)){
                                 Log.i(TAG," value:" + outputParams.get(iter).value.getStringValue());
                                 thumbnailKey = outputParams.get(iter).value.getStringValue();
                             }
@@ -218,6 +212,7 @@ public class C2paUtil {
             Log.d(TAG,"validateC2PA response = " + response);
             parseOutputParams(outputParams);
             nativeFreeFd(values[0]);
+            mStatus = parseC2PAStatus(response);
         } catch (Exception e) {
             Log.e(TAG,"signC2PA failed " + e);
             e.printStackTrace();
@@ -234,29 +229,17 @@ public class C2paUtil {
         }
     }
 
-    public C2PAStatus getC2PAStatus(C2PAData data) {
-        if(data == null){
-            return C2PAStatus.NON_C2PA;
+    private C2PAStatus parseC2PAStatus(int result) {
+        if(result == 0){
+            return C2PAStatus.C2PA;
+        }else if (result == 1){
+            return C2PAStatus.C2PA_INVALID_HASH;
         }
-        try {
-            boolean isInvalidHash = false;
-            if(data != null) {
-                for (ManifestStore manifestStore : data.getManifestStore()) {
-                    for (ValidationStatus validationStatus : manifestStore.getValidationStatuses()) {
-                        if (validationStatus.code.contains("signingCredential.") && !validationStatus.success) {
-                            return C2PAStatus.C2PA_INVALID_SIGNATURE;
-                        }
+        return C2PAStatus.NON_C2PA;
+    }
 
-                        if (!validationStatus.success) {
-                            isInvalidHash = true;
-                        }
-                    }
-                }
-            }
-            return isInvalidHash ? C2PAStatus.C2PA_INVALID_HASH : C2PAStatus.C2PA;
-        } catch (Exception ex) {
-            return C2PAStatus.NON_C2PA;
-        }
+    public C2PAStatus getC2PAStatus() {
+        return mStatus;
     }
     public static void setContext(Context context){
         mContext = context;

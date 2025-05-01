@@ -17,6 +17,7 @@ android_app {
         "gson",
         "android-support-v7-recyclerview",
         "androidx.recyclerview_recyclerview",
+        "androidx.exifinterface_exifinterface",
     ],
 
     srcs: [
@@ -43,6 +44,7 @@ android_app {
         "libjni_eglfence",
         "libjni_filtershow_filters",
         "libjni_jpegstream",
+        "libjni_c2pautil",
     ],
 
     optimize: {

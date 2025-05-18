@@ -69,3 +69,28 @@ cc_library_shared {
         },
     },
 }
+
+cc_library_shared {
+    name: "libjni_c2pautil",
+    srcs: ["jni_c2pa_util.cpp"],
+    cflags: [
+        "-ffast-math",
+        "-O3",
+        "-funroll-loops",
+    ],
+    header_libs: [
+        "jni_headers",
+        "libnativewindow_headers",
+    ],
+    static_libs: [
+        "libaidlcommonsupport",
+        "android.hardware.common-V2-ndk",
+    ],
+    shared_libs: [
+        "liblog",
+        "libcutils",
+        "libbinder_ndk",
+        "libutils",
+        "libnativewindow",
+    ],
+}

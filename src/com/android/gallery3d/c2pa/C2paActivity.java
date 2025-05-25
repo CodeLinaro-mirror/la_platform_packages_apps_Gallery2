@@ -37,6 +37,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -86,14 +87,14 @@ public class C2paActivity extends Activity {
         C2paUtil c2paUtil = new C2paUtil(filePath);
         c2paUtil.validateImage();
         C2PAData c2PAData = c2paUtil.getImageC2paData();
-        C2paUtil.C2PAStatus status = c2paUtil.getC2PAStatus(c2PAData);
+        C2paUtil.C2PAStatus status = c2paUtil.getC2PAStatus();
 
         RecyclerView list = findViewById(R.id.list);
         TextView message = findViewById(R.id.message);
 
         if(status == C2paUtil.C2PAStatus.C2PA) {
             Resources res = getResources();
-            C2PAPresenter presenter = new C2PAPresenter(c2PAData, new C2PAPresenter.Labels(
+            C2PAPresenter presenter = new C2PAPresenter(getMimeType(filePath),c2PAData, new C2PAPresenter.Labels(
                     "",
                     "",
                     "",
@@ -121,8 +122,7 @@ public class C2paActivity extends Activity {
                         presenter.isAiGenerated(manifestStore),
                         presenter.getModifications(manifestStore),
                         presenter.getCapturedDate(manifestStore),
-                        presenter.getSignedBy(manifestStore),
-                        presenter.getSignedWith(manifestStore)
+                        presenter.getSignedBy(manifestStore)
                 );
                 items.add(item);
             }
@@ -331,17 +331,26 @@ public class C2paActivity extends Activity {
                 return state;
         }
     }
+    private final String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+
+        return type;
+    }
 
     public static String getAddress(Context context, ManifestStore manifestStore) {
         AtomicReference<String> retAddress = new AtomicReference<>(null);
 
-        if (manifestStore != null && manifestStore.getAssertions() != null && manifestStore.getAssertions().getStdsExif() != null) {
-            manifestStore.getAssertions().getStdsExif().forEach(it -> {
+        if (manifestStore != null && manifestStore.getAssertions() != null && manifestStore.getAssertions().getMetadata() != null) {
+            manifestStore.getAssertions().getMetadata().forEach(it -> {
                 try {
-                    if (it.getExifData() != null && it.getExifData().getLongitude() != null && !it.getExifData().getLongitude().isEmpty()
-                            && it.getExifData().getLatitude() != null && !it.getExifData().getLatitude().isEmpty()) {
-                        double longitude = Double.parseDouble(it.getExifData().getLongitude());
-                        double latitude = Double.parseDouble(it.getExifData().getLatitude());
+                    if (it.getData() != null && it.getData().getLongitude() != null && !it.getData().getLongitude().isEmpty()
+                            && it.getData().getLatitude() != null && !it.getData().getLatitude().isEmpty()) {
+                        double longitude = Double.parseDouble(it.getData().getLongitude());
+                        double latitude = Double.parseDouble(it.getData().getLatitude());
 
                         if (!Geocoder.isPresent()) {
                             // geocoding not present, fallback to coordinates
@@ -356,7 +365,7 @@ public class C2paActivity extends Activity {
                                 retAddress.set(buildAddress(addresses.get(0)));
                                 countDownLatch.countDown();
                             });
-                            countDownLatch.await(3, TimeUnit.SECONDS);
+                            countDownLatch.await();
                         } else {
                             try {
                                 retAddress.set(buildAddress(geocoder.getFromLocation(latitude, longitude, 1).get(0)));
@@ -365,8 +374,8 @@ public class C2paActivity extends Activity {
                             }
                         }
                     }
-                } catch (Exception e) {
-                    Log.i(TAG, "exception:", e);
+                } catch(Exception e) {
+                    // process or ignore
                 }
             });
         }
@@ -434,18 +443,14 @@ public class C2paActivity extends Activity {
                 holder.modifications_label.setVisibility(View.VISIBLE);
                 holder.modifications_text.setVisibility(View.VISIBLE);
                 holder.modifications_text.setText(String.valueOf(item.modifications));
-                holder.signed_with_label.setVisibility(View.GONE);
-                holder.signed_with_text.setVisibility(View.GONE);
             } else {
                 holder.modifications_label.setVisibility(View.GONE);
                 holder.modifications_text.setVisibility(View.GONE);
-                holder.signed_with_label.setVisibility(View.VISIBLE);
-                holder.signed_with_text.setVisibility(View.VISIBLE);
             }
-
             holder.captured_text.setText(item.capturedDateText);
+            holder.captured_text.setVisibility(View.VISIBLE);
+            holder.captured_label.setVisibility(View.VISIBLE);
             holder.signed_by_text.setText(item.signedByText);
-            holder.signed_with_text.setText(item.signedWithText);
             holder.progress.setVisibility(View.GONE);
         }
 
@@ -468,10 +473,7 @@ public class C2paActivity extends Activity {
             private TextView captured_with_text;
             private TextView modifications_label;
             private TextView modifications_text;
-            private TextView signed_by_label;
             private TextView signed_by_text;
-            private TextView signed_with_label;
-            private TextView signed_with_text;
             private ProgressBar progress;
 
 
@@ -489,10 +491,7 @@ public class C2paActivity extends Activity {
                 captured_with_text = itemView.findViewById(R.id.captured_with_text);
                 modifications_label = itemView.findViewById(R.id.modifications_label);
                 modifications_text = itemView.findViewById(R.id.modifications_text);
-                signed_by_label = itemView.findViewById(R.id.signed_by_label);
                 signed_by_text = itemView.findViewById(R.id.signed_by_text);
-                signed_with_label = itemView.findViewById(R.id.signed_with_label);
-                signed_with_text = itemView.findViewById(R.id.signed_with_text);
                 progress = itemView.findViewById(R.id.progress);
             }
         }
@@ -510,11 +509,10 @@ public class C2paActivity extends Activity {
         int modifications;
         String capturedDateText;
         String signedByText;
-        String signedWithText;
 
         public Item(String address, Bitmap thumbnail, C2PAPresenter.Type type, String typeLabel, String capturedWith,
                     String capturedWithLabel, String capturedLabel, boolean isAiGenerated, int modifications,
-                    String capturedDateText, String signedByText, String signedWithText) {
+                    String capturedDateText, String signedByText) {
             this.address = address;
             this.thumbnail = thumbnail;
             this.type = type;
@@ -526,7 +524,6 @@ public class C2paActivity extends Activity {
             this.modifications = modifications;
             this.capturedDateText = capturedDateText;
             this.signedByText = signedByText;
-            this.signedWithText = signedWithText;
         }
     }
 }

@@ -30,7 +30,7 @@ import com.truepic.lensverify.data.c2padata.assertions.ThumbnailAssertion;
 import com.truepic.lensverify.data.c2padata.assertions.actions.C2PAAction;
 import com.truepic.lensverify.data.c2padata.assertions.ai.CustomAI;
 import com.truepic.lensverify.data.c2padata.assertions.creativework.StdsCreativeWork;
-import com.truepic.lensverify.data.c2padata.assertions.exif.StdsExif;
+import com.truepic.lensverify.data.c2padata.assertions.metadata.Metadata;
 import com.truepic.lensverify.data.c2padata.assertions.odometry.CustomOdometry;
 
 import java.util.List;
@@ -42,19 +42,23 @@ public class Assertions {
     private List<ThumbnailAssertion> c2paThumbnailClaimJpeg;
     @SerializedName("c2pa.thumbnail.ingredient.jpeg")
     private List<ThumbnailAssertion> c2paThumbnailIngredientJpeg;
+    @SerializedName("c2pa.thumbnail.claim.png")
+    private List<ThumbnailAssertion> c2paThumbnailClaimPng;
+    @SerializedName("c2pa.thumbnail.ingredient.png")
+    private List<ThumbnailAssertion> c2paThumbnailIngredientPng;
     @SerializedName("com.truepic.custom.odometry")
     private List<CustomOdometry> truepicOdometry;
     @SerializedName("com.truepic.custom.blur")
     private List<CustomBlur> truepicBlur;
     @SerializedName("com.truepic.libc2pa")
     private List<LibC2PA> truepicLibC2PA;
-    @SerializedName("stds.exif")
-    private List<StdsExif> stdsExif;
+    @SerializedName(value = "stds.exif", alternate = {"c2pa.metadata", "stds.metadata"})
+    private List<Metadata> metadata;
     @SerializedName("com.truepic.custom.ai")
     private List<CustomAI> customAi;
     @SerializedName("c2pa.ingredient")
     private List<C2PAIngredient> c2paIngredient;
-    @SerializedName("c2pa.actions")
+    @SerializedName(value = "c2pa.actions", alternate = {"c2pa.actions.v2"})
     private List<C2PAAction> c2paActions;
     @SerializedName("stds.schema-org.CreativeWork")
     private List<StdsCreativeWork> stdsCreativeWork;
@@ -79,8 +83,8 @@ public class Assertions {
         return truepicLibC2PA;
     }
 
-    public List<StdsExif> getStdsExif() {
-        return stdsExif;
+    public List<Metadata> getMetadata() {
+        return metadata;
     }
 
     public List<CustomAI> getCustomAi() {
@@ -101,5 +105,13 @@ public class Assertions {
 
     public List<StdsCreativeWork> getStdsCreativeWork() {
         return stdsCreativeWork;
+    }
+
+    public List<ThumbnailAssertion> getC2paThumbnailClaimPng() {
+        return c2paThumbnailClaimPng;
+    }
+
+    public List<ThumbnailAssertion> getC2paThumbnailIngredientPng() {
+        return c2paThumbnailIngredientPng;
     }
 }

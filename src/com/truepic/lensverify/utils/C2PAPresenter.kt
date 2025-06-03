@@ -26,12 +26,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.location.Address
 import android.location.Geocoder
-import android.media.ExifInterface
 import android.os.Build
+import androidx.exifinterface.media.ExifInterface
 import com.truepic.lensverify.data.c2padata.C2PAData
 import com.truepic.lensverify.data.c2padata.ManifestStore
 import com.truepic.lensverify.data.c2padata.assertions.actions.C2PAActionDataActions
-import com.truepic.lensverify.data.c2padata.assertions.exif.StdsExif
+import com.truepic.lensverify.data.c2padata.assertions.metadata.Metadata
 import java.io.ByteArrayInputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -41,14 +41,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class C2PAPresenter(
-        private val data: C2PAData,
-        private val labels: Labels
+    private val mimeType: String?,
+    private val data: C2PAData,
+    private val labels: Labels
 ) {
 
     companion object {
         private val modificationsExclude = listOf("c2pa.opened", "c2pa.produced", "c2pa.created")
         private const val inDelimiter = " in "
-        private const val truepicName = "Truepic"
     }
 
     data class Labels(
@@ -77,6 +77,10 @@ class C2PAPresenter(
 
     @SuppressLint("SimpleDateFormat")
     private val inputDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+    @SuppressLint("SimpleDateFormat")
+    private val inputDateFormatMilliseconds = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SZ")
+    @SuppressLint("SimpleDateFormat")
+    private val inputDateFormatNew = SimpleDateFormat("yyyy:MM:dd' 'HH:mm:ss")
 
     fun getManifests(): List<ManifestStore> {
         return data.manifestStore
@@ -92,12 +96,10 @@ class C2PAPresenter(
         manifestStore?.let { manifest ->
             if (!manifest.assertions.containsAiGeneratedContent()) {
                 if (manifest.assertions.c2paIngredient != null && manifest.assertions.c2paIngredient.size <= 1) {
-                    if (manifest.assertions.c2paIngredient.first().data.ingredientManifest.orEmpty()
-                            .contains(truepicName, true)
-                    ) {
+                    if (containsMakeAndModel(getManifests().first())) {
                         descriptor = labels.descriptorModified
                     }
-                } else if (manifest.claim.claimGenerator.startsWith(truepicName)) {
+                } else if (containsMakeAndModel(manifest)) {
                     descriptor = labels.descriptorOriginal
                 }
             }
@@ -116,11 +118,11 @@ class C2PAPresenter(
     }
 
     fun getType(): Type {
-        if (data.manifestStore.first()?.claim?.dcFormat.orEmpty().contains("audio")) {
+        if (mimeType.orEmpty().contains("audio")) {
             return Type.Audio
         }
 
-        if (data.manifestStore.first()?.claim?.dcFormat.orEmpty().contains("video")) {
+        if (mimeType.orEmpty().contains("video")) {
             return Type.Video
         }
 
@@ -136,19 +138,7 @@ class C2PAPresenter(
     }
 
     fun getSignedBy(manifestStore: ManifestStore?): String {
-        return manifestStore?.signature?.signedBy.orEmpty()
-    }
-
-    fun getSignedWith(): String? {
-        return getSignedWith(data.manifestStore.first())
-    }
-
-    fun getSignedWith(manifestStore: ManifestStore?): String? {
-        if (getCapturedWith(manifestStore) == getClaimGeneratorFormatted(manifestStore)) {
-            return null
-        }
-
-        return getClaimGeneratorFormatted(manifestStore)
+        return manifestStore?.certificate?.organizationName.orEmpty()
     }
 
     private fun getClaimGeneratorFormatted(manifestStore: ManifestStore?): String? {
@@ -167,7 +157,9 @@ class C2PAPresenter(
 
     fun isAiGenerated(manifestStore: ManifestStore?): Boolean {
         getManifests().forEach {
-            if (it.aiStatus.isAIGenerated || it.aiStatus.containsAI) {
+            if (it.assertions?.containsAiGeneratedContent() == true) {
+                // one of the previous manifests or current one contains ai content
+                // hence we mark all manifests from now on as ai generated
                 return true
             }
 
@@ -183,26 +175,10 @@ class C2PAPresenter(
     }
 
     fun getCapturedWith(manifestStore: ManifestStore?): String {
-        if (manifestStore?.assertions?.containsAiGeneratedContent() == true) {
-            val customAiAssertion = manifestStore.assertions?.customAi?.first()
-
-            if (customAiAssertion == null ||
-                customAiAssertion.data?.modelName.isNullOrEmpty() ||
-                customAiAssertion.data?.modelName.isNullOrEmpty()) {
-                return getClaimGeneratorFormatted(manifestStore).orEmpty()
-            }
-
-            return customAiAssertion.let {
-                it.data.modelName.orEmpty() + " " + it.data.modelVersion.orEmpty()
-            }
-        }
-
         return manifestStore?.let {
-            if (it.certificate?.subjectName.orEmpty().contains(inDelimiter)) {
-                // lens app
-                it.certificate?.subjectName?.substringAfter(inDelimiter).orEmpty().trim()
+            if(it.claim.claimGeneratorInfo?.first() != null) {
+                it.claim.claimGeneratorInfo!!.first().name + " " + it.claim.claimGeneratorInfo!!.first().version
             } else {
-                // others -> this will replace / and _ with spaces
                 // for example Graphics_App/1.2.3 will be parsed out as Graphics App 1.2.3
                 it.claim.claimGenerator.substringBefore(" ").replace("_", " ")
                     .replace("/", " ")
@@ -243,23 +219,29 @@ class C2PAPresenter(
 
         try {
             manifestStore?.let { store ->
-                if (store.signature.signedOn != null) {
-                    date = formatDate(store.signature.signedOn)
+
+                // "c2pa.actions".data.metadata.dateTime
+                store.assertions.c2paActions?.lastOrNull {
+                    it.data?.metadata?.dateTime != null
+                }?.let { c2paAction ->
+                    date = formatDate(c2paAction.data.metadata.dateTime)
                 }
 
+                // exif:DateTimeOriginal
                 if (date.isEmpty()) {
-                    store.assertions.stdsExif.last {
-                        it.exifData.dateTimeOriginal != null
+                    store.assertions.metadata?.lastOrNull {
+                        it.data.dateTimeOriginal != null
                     }?.let {
-                        date = formatDate(it.exifData.dateTimeOriginal)
+                        date = formatDate(it.data.dateTimeOriginal)
                     }
                 }
 
+                // "c2pa.actions".data.actions.when
                 if (date.isEmpty()) {
-                    store.assertions.stdsExif.last {
-                        it.exifData.gpsTimestamp != null
-                    }?.let {
-                        date = formatDate(it.exifData.dateTimeOriginal)
+                    store.assertions.c2paActions?.forEach { c2PAAction ->
+                        c2PAAction.data.actions.lastOrNull { it.`when` != null }?.let {
+                            date = formatDate(it.`when`)
+                        }
                     }
                 }
             }
@@ -300,19 +282,27 @@ class C2PAPresenter(
 
     fun getThumbnail(manifestStore: ManifestStore, size: Int = 1024): Bitmap? {
         try {
-                thumbnails?.get(manifestStore.uri)?.let {
-                    val orientation: Int = try {
-                        val exifInterface = ExifInterface(ByteArrayInputStream(it))
-                        exifInterface.getAttributeInt("Orientation", 1)
-                    } catch (e: java.lang.Exception) {
-                        1
-                    }
+            // retrieve thumbnail id from existing assertions
+            val thumbnailId: String = manifestStore.assertions.let {
+                it.c2paThumbnailClaimJpeg.first().thumbnailID ?:
+                it.c2paThumbnailClaimPng.first().thumbnailID ?:
+                it.c2paThumbnailIngredientJpeg.first().thumbnailID ?:
+                it.c2paThumbnailIngredientPng.first().thumbnailID
+            }
 
-                    return Util.getScaledBitmapFromBuffer(
-                        it, size,
-                        Util.getDegreesFromExifOrientation(orientation)
-                    )
+            thumbnails?.get(thumbnailId)?.let {
+                val orientation: Int = try {
+                    val exifInterface = ExifInterface(ByteArrayInputStream(it))
+                    exifInterface.getAttributeInt("Orientation", 1)
+                } catch (e: java.lang.Exception) {
+                    1
                 }
+
+                return Util.getScaledBitmapFromBuffer(
+                    it, size,
+                    Util.getDegreesFromExifOrientation(orientation)
+                )
+            }
         } catch (e: Exception) {
             // could be ignored
         }
@@ -337,12 +327,12 @@ class C2PAPresenter(
         suspendCoroutine { continuation ->
             var callbackRunning = false
 
-            store?.assertions?.stdsExif?.forEach {
-                if (it.exifData?.longitude.orEmpty().isNotEmpty() && it.exifData?.latitude.orEmpty()
+            store?.assertions?.metadata?.forEach {
+                if (it.data?.longitude.orEmpty().isNotEmpty() && it.data?.latitude.orEmpty()
                         .isNotEmpty()
                 ) {
-                    val longitude = it.exifData.longitude.toDouble()
-                    val latitude = it.exifData.latitude.toDouble()
+                    val longitude = it.data.longitude.toDouble()
+                    val latitude = it.data.latitude.toDouble()
                     callbackRunning = true
 
                     if (Geocoder.isPresent().not()) {
@@ -483,9 +473,9 @@ class C2PAPresenter(
     }
 
     private fun containsMakeAndModel(store: ManifestStore?): Boolean {
-        store?.assertions?.stdsExif?.forEach { stdsExif: StdsExif? ->
-            if (stdsExif?.exifData?.make.isNullOrEmpty().not() &&
-                stdsExif?.exifData?.model.isNullOrEmpty().not()
+        store?.assertions?.metadata?.forEach { stdsExif: Metadata? ->
+            if (stdsExif?.data?.make.isNullOrEmpty().not() &&
+                stdsExif?.data?.model.isNullOrEmpty().not()
             ) {
                 return true
             }
@@ -494,16 +484,37 @@ class C2PAPresenter(
         return false
     }
 
+    /**
+     * This method will try to parse date using three different formats we currently accept
+     * into local date format based on the users settings
+     */
     private fun formatDate(date: String): String {
+        var retDate = ""
+
         try {
-            inputDateFormat.parse(date.replace("Z", "+0000"))
-                ?.let { dateObj ->
-                    return localDateFormat.format(dateObj)
-                }
+            inputDateFormat.parse(date.replace("Z", "+0000"))?.let {
+                retDate = localDateFormat.format(it)
+            }
         } catch (e: Exception) {
-            // safe to ignore
+            // ignore
         }
 
-        return ""
+        try {
+            inputDateFormatMilliseconds.parse(date.replace("Z", "+0000"))?.let {
+                retDate = localDateFormat.format(it)
+            }
+        } catch (e: Exception) {
+            // ignore
+        }
+
+        try {
+            inputDateFormatNew.parse(date.replace("Z", "+0000"))?.let {
+                retDate = localDateFormat.format(it)
+            }
+        } catch (e: Exception) {
+            // ignore
+        }
+
+        return retDate
     }
 }

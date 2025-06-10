@@ -21,7 +21,7 @@
  */
 /*
  * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
- * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause-Clear
  */
 
@@ -35,15 +35,11 @@ import android.os.ParcelFileDescriptor;
 import android.os.ServiceManager;
 import android.os.SharedMemory;
 import android.preference.PreferenceManager;
-import android.system.ErrnoException;
-import android.system.OsConstants;
 
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,17 +52,18 @@ import vendor.qti.hardware.c2pa.IC2PA;
 
 import com.truepic.lensverify.data.c2padata.C2PAData;
 import com.google.gson.Gson;
-import com.truepic.lensverify.data.c2padata.ManifestStore;
-import com.truepic.lensverify.data.c2padata.ValidationStatus;
 
 public class C2paUtil {
     private static final String TAG = "C2paUtil";
+    private static boolean mIsSupported = false;
+
     private static Context mContext = null;
     private Map<FileDescriptor, SharedMemory> fd_mem =
             new HashMap<FileDescriptor, SharedMemory>();
     private static IC2PA mFactoryAidl = null;
     private String mJsonResult;
     private Map<String, byte[]> mThumbnails = new HashMap<>();
+    private C2PAStatus mStatus;
 
     String mFilePath;
     public C2paUtil(String filePath) {
@@ -77,95 +74,6 @@ public class C2paUtil {
         C2PA,
         C2PA_INVALID_HASH,
         C2PA_INVALID_SIGNATURE
-    }
-    public  Ashmem getDataInAshmemObj(ByteBuffer pData) {
-        int ret = 0;
-        int rDataSize = 0;
-        Ashmem rAshmem;
-        SharedMemory sharedFd = null;
-        ByteBuffer bbf = null;
-        String s;
-        byte[] recieveSM;
-
-        rAshmem = new Ashmem();
-
-        Log.i(TAG, "getDataInAshmem:Enter.");
-        if (pData == null) {
-            Log.e(TAG, "getDataInAshmem: ERROR: Null ptr passed");
-            return null;
-        }
-
-        rDataSize = pData.array().length - pData.arrayOffset();
-        sharedFd = createSharedMemory(rDataSize);
-        Log.i(TAG, "SharedFd : " + Integer.toString(sharedFd.getFileDescriptor().getInt$()));
-        try {
-            bbf = sharedFd.map(OsConstants.PROT_READ|OsConstants.PROT_WRITE, 0, rDataSize);
-        } catch (ErrnoException e) {
-            Log.e(TAG, "getDataInAshmem: ERROR: Failed to map Sharedmemory : ", e);
-            sharedFd.close();
-            return null;
-        }
-        pData.flip();
-        pData.position(pData.arrayOffset() + pData.position());
-        bbf.put(pData.array(), pData.position(), rDataSize);
-
-        try {
-            rAshmem.fd = ParcelFileDescriptor.dup(sharedFd.getFileDescriptor());
-            rAshmem.size = rDataSize;
-            fd_mem.put(rAshmem.fd.getFileDescriptor(), sharedFd);
-            unmapSharedMemory(rAshmem.fd, bbf);
-        } catch (IOException e) {
-            Log.e(TAG, "getDataInAshmem: ERROR: Failed to get file descriptor : ", e);
-            sharedFd.unmap(bbf);
-            sharedFd.close();
-            fd_mem.remove(rAshmem.fd);
-            return null;
-        }
-
-        Log.i(TAG, "getDataInAshmem:Exit.");
-        return rAshmem;
-    }
-
-    private SharedMemory createSharedMemory(int size) {
-        SharedMemory sFD = null;
-        try {
-            sFD = SharedMemory.create("", size);
-        } catch (ErrnoException e) {
-            Log.e(TAG, "createSharedMemory: ERROR: Failed to create Sharedmemory : ", e);
-        }
-        if (sFD == null || sFD.getSize() != size) {
-            Log.e(TAG, "createSharedMemory: ERROR: Failed to allocate shared memory");
-            sFD.close();
-            return null;
-        }
-        return sFD;
-    }
-
-    private void unmapSharedMemory(ParcelFileDescriptor pFd, ByteBuffer bBuf) {
-        FileDescriptor fd = pFd.getFileDescriptor();
-        if (!fd_mem.containsKey(fd)) {
-            Log.e(TAG, "unmapSharedMemory: ERROR: FD not found in cached map");
-            return;
-        }
-        fd_mem.get(fd).unmap(bBuf);
-    }
-
-    public  ByteBuffer readFileToByteBuffer(File file) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(file, "r");
-        ByteBuffer byteBuffer;
-        try {
-            long longLength = raf.length();
-            int length = (int) longLength;
-            if (length != longLength) throw new IOException("File size >= 2 GB");
-            Log.d(TAG,"signC2PA readFileToByteBuffer buffer size =  " + length);
-            byte[] data = new byte[length];
-            raf.readFully(data);
-            byteBuffer = ByteBuffer.allocate(data.length);
-            byteBuffer.put(data);
-        } finally {
-            raf.close();
-        }
-        return byteBuffer;
     }
 
     public static void connectC2PAService() {
@@ -191,9 +99,9 @@ public class C2paUtil {
         List<C2PADataTypePair> configParams = new ArrayList<C2PADataTypePair>();
         C2PADataTypePair outPair = new C2PADataTypePair();
         C2PADataType c2PADataType;
-        outPair.key = "MEDIA_TYPE";
+        outPair.key = "INPLACE_UPDATE";
         c2PADataType = new C2PADataType();
-        c2PADataType.setIntValue(type);
+        c2PADataType.setByteValue((byte) 1);
         outPair.value = c2PADataType;
         configParams.add(outPair);
         return configParams;
@@ -250,7 +158,7 @@ public class C2paUtil {
                         for (int iter3 = 0; iter3 < thumbnailLabel.length && iter < outputParams.size(); iter3++) {
                             label = thumbnailLabel[iter3] + iter2;
                             Log.i(TAG,"label:" + label + ",key:" + outputParams.get(iter).key + ",iter:" + iter);
-                            if(outputParams.get(iter).key.equals(thumbnailLabel[2] + iter2)){
+                            if(outputParams.get(iter).key.equals(thumbnailLabel[1] + iter2)){
                                 Log.i(TAG," value:" + outputParams.get(iter).value.getStringValue());
                                 thumbnailKey = outputParams.get(iter).value.getStringValue();
                             }
@@ -276,9 +184,22 @@ public class C2paUtil {
 
     public void validateImage(){
         try {
-            File file = new File(mFilePath);
-            ByteBuffer buffer = readFileToByteBuffer(file);
-            Ashmem ashmem = getDataInAshmemObj(buffer);
+            Ashmem ashmem = new Ashmem();
+            Log.i(TAG,"mIsSupported:" + mIsSupported);
+            if(!mIsSupported){
+                return;
+            }
+            int[] values = nativeGetHardwareBufferFd(mFilePath);
+            if(values == null){
+                return;
+            }
+            try {
+                ashmem.fd = ParcelFileDescriptor.fromFd(values[0]);
+                ashmem.size = values[1];
+            } catch (IOException e) {
+                Log.e(TAG, "ERROR: Failed to get file descriptor : ", e);
+                return ;
+            }
             List<C2PADataTypePair> configParams = getInputConfigParams(0);
             List<C2PADataTypePair> outputParams = new ArrayList<C2PADataTypePair>();
             Log.d(TAG,"signC2PA signC2PA now! ashmem size =  " + ashmem.size + ",mFactoryAidl:" + mFactoryAidl);
@@ -290,6 +211,8 @@ public class C2paUtil {
                     mFactoryAidl.validateMedia(ashmem, configParams, outputParams);
             Log.d(TAG,"validateC2PA response = " + response);
             parseOutputParams(outputParams);
+            nativeFreeFd(values[0]);
+            mStatus = parseC2PAStatus(response);
         } catch (Exception e) {
             Log.e(TAG,"signC2PA failed " + e);
             e.printStackTrace();
@@ -306,29 +229,17 @@ public class C2paUtil {
         }
     }
 
-    public C2PAStatus getC2PAStatus(C2PAData data) {
-        if(data == null){
-            return C2PAStatus.NON_C2PA;
+    private C2PAStatus parseC2PAStatus(int result) {
+        if(result == 0){
+            return C2PAStatus.C2PA;
+        }else if (result == 1){
+            return C2PAStatus.C2PA_INVALID_HASH;
         }
-        try {
-            boolean isInvalidHash = false;
-            if(data != null) {
-                for (ManifestStore manifestStore : data.getManifestStore()) {
-                    for (ValidationStatus validationStatus : manifestStore.getValidationStatuses()) {
-                        if (validationStatus.code.contains("signingCredential.") && !validationStatus.success) {
-                            return C2PAStatus.C2PA_INVALID_SIGNATURE;
-                        }
+        return C2PAStatus.NON_C2PA;
+    }
 
-                        if (!validationStatus.success) {
-                            isInvalidHash = true;
-                        }
-                    }
-                }
-            }
-            return isInvalidHash ? C2PAStatus.C2PA_INVALID_HASH : C2PAStatus.C2PA;
-        } catch (Exception ex) {
-            return C2PAStatus.NON_C2PA;
-        }
+    public C2PAStatus getC2PAStatus() {
+        return mStatus;
     }
     public static void setContext(Context context){
         mContext = context;
@@ -339,4 +250,17 @@ public class C2paUtil {
         return settings.getBoolean("c2pa_option", false);
     }
 
+    private native int[] nativeGetHardwareBufferFd(String filePath);
+
+    private native  void nativeFreeFd(int id);
+
+    static {
+        try {
+            System.loadLibrary("jni_c2pautil");
+            mIsSupported = true;
+        } catch (UnsatisfiedLinkError e) {
+            Log.d(TAG, e.toString());
+            mIsSupported = false;
+        }
+    }
 }

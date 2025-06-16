@@ -21,8 +21,15 @@
  */
 package com.truepic.lensverify.data.c2padata;
 
-import com.google.gson.annotations.SerializedName;
+import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Claim {
@@ -39,8 +46,7 @@ public class Claim {
     private String claimGenerator;
 
     @SerializedName("claim_generator_info")
-
-    private List<ClaimGeneratorInfo> claimGeneratorInfo;
+    private JsonElement claimGeneratorInfo;
 
     private boolean isActive;
 
@@ -60,8 +66,17 @@ public class Claim {
         return claimGenerator;
     }
 
-    public List<ClaimGeneratorInfo> getClaimGeneratorInfo() {
-        return claimGeneratorInfo;
+    public @Nullable List<ClaimGeneratorInfo> getClaimGeneratorInfo() {
+        if (claimGeneratorInfo == null) return null;
+
+        if (claimGeneratorInfo.isJsonArray()) { // pre 2.0 spec we have list of ClaimGeneratorInfo(s)
+            Type listType = new TypeToken<List<ClaimGeneratorInfo>>(){}.getType();
+            return (new Gson()).fromJson(claimGeneratorInfo, listType);
+        } else { // 2.0 we have single ClaimGeneratorInfo
+            ArrayList<ClaimGeneratorInfo> list = new ArrayList<>();
+            list.add((new Gson()).fromJson(claimGeneratorInfo, ClaimGeneratorInfo.class));
+            return list;
+        }
     }
 
     public boolean isActive() {

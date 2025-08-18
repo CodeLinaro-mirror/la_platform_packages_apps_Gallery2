@@ -1149,7 +1149,6 @@ CHAR LIMIT = NONE] -->
     <string name="c2pa_info_location">Location</string>
     <string name="c2pa_info_modifications">Modifications</string>
     <string name="c2pa_info_signed_by">Signed by</string>
-    <string name="c2pa_info_signed_with">Signed with</string>
     <string name="back_content_desc">Back</string>
     <string name="c2pa_info_created">Created</string>
     <string name="c2pa_info_created_with">Created with</string>

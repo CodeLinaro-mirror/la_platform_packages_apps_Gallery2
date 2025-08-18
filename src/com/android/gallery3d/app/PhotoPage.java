@@ -15,7 +15,7 @@
  */
 /*
  * Changes from Qualcomm Innovation Center, Inc. are provided under the following license:
- * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ * Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause-Clear
  */
 
@@ -948,7 +948,9 @@ public abstract class PhotoPage extends ActivityState implements
         @Override
         public void onProgressComplete(int result) {
             MediaItem current = mModel.getMediaItem(0);
-            mModel.setCurrentPhoto(Path.fromString(current.getFilePath()), 0);
+            if(current != null) {
+                mModel.setCurrentPhoto(Path.fromString(current.getFilePath()), 0);
+            }
         }
 
         @Override
@@ -1145,13 +1147,9 @@ public abstract class PhotoPage extends ActivityState implements
         int hasC2paInfo = mModel.hasC2paInfo(0);
         boolean showC2paInfo = hasC2paInfo != MediaItem.C2PAStatus.NON_C2PA.ordinal();
         if (showC2paInfo) {
-            int w = mPhotoView.getWidth();
-            int h = mPhotoView.getHeight();
             Rect rect = mPhotoView.getPhotoRect(0);
-            int iconCX = w - GalleryUtils.dpToPixel(20);
-            int iconCY = GalleryUtils.dpToPixel(20);
-            showC2paInfo = (Math.abs(x - rect.left - iconCX) <= GalleryUtils.dpToPixel(30))
-                    && (Math.abs(y - rect.top - iconCY) <= GalleryUtils.dpToPixel(30));
+            showC2paInfo = (Math.abs(x - rect.right) <= GalleryUtils.dpToPixel(30))
+                    && (Math.abs(y - rect.top) <= GalleryUtils.dpToPixel(30));
         }
 
         if (playVideo) {

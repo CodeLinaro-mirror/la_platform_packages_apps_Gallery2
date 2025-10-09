@@ -42,9 +42,12 @@ import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.android.gallery3d.util.UpdateHelper;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 // LocalImage represents an image in the local storage.
 public class LocalImage extends LocalMediaItem {
@@ -130,16 +133,49 @@ public class LocalImage extends LocalMediaItem {
         }
     }
 
-    public int getOrientation(){
-        ExifInterface exif = new ExifInterface();
-        try {
-            exif.readExif(filePath);
-        } catch (FileNotFoundException e) {
-            Log.w(TAG, "Could not find file to read exif: " + filePath, e);
-        } catch (IOException e) {
-            Log.w(TAG, "Could not read exif from file: " + filePath, e);
+    public int getOrientation(String mimetype){
+        Log.i(TAG,"getOrientation, mimetype:" + mimetype);
+        if (!mimetype.equals("image/heic")) {
+            ExifInterface exif = new ExifInterface();
+            try {
+                exif.readExif(filePath);
+            } catch (FileNotFoundException e) {
+                Log.w(TAG, "Could not find file to read exif: " + filePath, e);
+            } catch (IOException e) {
+                Log.w(TAG, "Could not read exif from file: " + filePath, e);
+            }
+            return Exif.getOrientation(exif);
+        }else{
+            //read orientation for heic
+            InputStream is = null;
+            try {
+                is = (InputStream) new BufferedInputStream(new FileInputStream(filePath));
+                android.media.ExifInterface ei = new android.media.ExifInterface(is);
+                String tag = android.media.ExifInterface.TAG_ORIENTATION;
+                int orientation = ei.getAttributeInt(tag, 0);
+                switch(orientation) {
+                    case ExifInterface.Orientation.RIGHT_TOP:
+                        return 90;
+                    case ExifInterface.Orientation.BOTTOM_LEFT:
+                        return 180;
+                    case ExifInterface.Orientation.RIGHT_BOTTOM:
+                        return 270;
+                    default:
+                        return 0;
+                }
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to read EXIF orientation", e);
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (IOException e) {
+                    Log.w(TAG, "Failed to close InputStream", e);
+                }
+            }
         }
-        return Exif.getOrientation(exif);
+        return 0;
     }
     private void loadFromCursor(Cursor cursor) {
         id = cursor.getInt(INDEX_ID);
@@ -151,7 +187,7 @@ public class LocalImage extends LocalMediaItem {
         dateAddedInSec = cursor.getLong(INDEX_DATE_ADDED);
         dateModifiedInSec = cursor.getLong(INDEX_DATE_MODIFIED);
         filePath = cursor.getString(INDEX_DATA);
-        rotation = getOrientation();
+        rotation = getOrientation(mimeType);
         bucketId = cursor.getInt(INDEX_BUCKET_ID);
         fileSize = cursor.getLong(INDEX_SIZE);
         width = cursor.getInt(INDEX_WIDTH);
@@ -173,7 +209,7 @@ public class LocalImage extends LocalMediaItem {
         dateModifiedInSec = uh.update(
                 dateModifiedInSec, cursor.getLong(INDEX_DATE_MODIFIED));
         filePath = uh.update(filePath, cursor.getString(INDEX_DATA));
-        rotation = uh.update(rotation, getOrientation());
+        rotation = uh.update(rotation, getOrientation(mimeType));
         bucketId = uh.update(bucketId, cursor.getInt(INDEX_BUCKET_ID));
         fileSize = uh.update(fileSize, cursor.getLong(INDEX_SIZE));
         width = uh.update(width, cursor.getInt(INDEX_WIDTH));

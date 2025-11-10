@@ -28,10 +28,12 @@ import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.app.PanoramaMetadataSupport;
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
+import com.android.gallery3d.exif.ExifInterface;
 import com.android.gallery3d.util.ThreadPool.CancelListener;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 
+import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -97,17 +99,22 @@ public class UriImage extends MediaItem {
                 || ContentResolver.SCHEME_ANDROID_RESOURCE.equals(scheme)
                 || ContentResolver.SCHEME_FILE.equals(scheme)) {
             try {
+                InputStream is = mApplication.getContentResolver()
+                        .openInputStream(mUri);
                 if (MIME_TYPE_JPEG.equalsIgnoreCase(mContentType)) {
-                    InputStream is = mApplication.getContentResolver()
-                            .openInputStream(mUri);
                     mRotation = Exif.getOrientation(is);
-                    Utils.closeSilently(is);
+                } else if (MIME_TYPE_HEIC.equalsIgnoreCase(mContentType)){
+                    android.media.ExifInterface ei = new android.media.ExifInterface(is);
+                    short value = (short) ei.getAttributeInt(
+                            android.media.ExifInterface.TAG_ORIENTATION, 0);
+                    mRotation = ExifInterface.getRotationForOrientationValue(value);
                 }
+                Utils.closeSilently(is);
                 mFileDescriptor = mApplication.getContentResolver()
                         .openFileDescriptor(mUri, "r");
                 if (jc.isCancelled()) return STATE_INIT;
                 return STATE_DOWNLOADED;
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 Log.w(TAG, "fail to open: " + mUri, e);
                 return STATE_ERROR;
             }
@@ -120,11 +127,16 @@ public class UriImage extends MediaItem {
                     Log.w(TAG, "download failed " + url);
                     return STATE_ERROR;
                 }
+                InputStream is = new FileInputStream(mCacheEntry.cacheFile);
                 if (MIME_TYPE_JPEG.equalsIgnoreCase(mContentType)) {
-                    InputStream is = new FileInputStream(mCacheEntry.cacheFile);
                     mRotation = Exif.getOrientation(is);
-                    Utils.closeSilently(is);
+                } else if (MIME_TYPE_HEIC.equalsIgnoreCase(mContentType)){
+                    android.media.ExifInterface ei = new android.media.ExifInterface(is);
+                    short value = (short) ei.getAttributeInt(
+                            android.media.ExifInterface.TAG_ORIENTATION, 0);
+                    mRotation = ExifInterface.getRotationForOrientationValue(value);
                 }
+                Utils.closeSilently(is);
                 mFileDescriptor = ParcelFileDescriptor.open(
                         mCacheEntry.cacheFile, ParcelFileDescriptor.MODE_READ_ONLY);
                 return STATE_DOWNLOADED;

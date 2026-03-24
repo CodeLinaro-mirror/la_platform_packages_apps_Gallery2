@@ -181,8 +181,10 @@ public class C2paUtil {
     }
 
     public void validateImage(){
+        int nativeFd = -1;
+        Ashmem ashmem = null;
         try {
-            Ashmem ashmem = new Ashmem();
+            ashmem = new Ashmem();
             Log.i(TAG,"mIsSupported:" + mIsSupported);
             if(!mIsSupported){
                 return;
@@ -192,9 +194,10 @@ public class C2paUtil {
                 return;
             }
             try {
-                ashmem.fd = ParcelFileDescriptor.fromFd(values[0]);
+                nativeFd = values[0];
+                ashmem.fd = ParcelFileDescriptor.adoptFd(values[0]);
                 ashmem.size = values[1];
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "ERROR: Failed to get file descriptor : ", e);
                 return ;
             }
@@ -209,11 +212,28 @@ public class C2paUtil {
                     mFactoryAidl.validateMedia(ashmem, configParams, outputParams);
             Log.d(TAG,"validateC2PA response = " + response);
             parseOutputParams(outputParams);
-            nativeFreeFd(values[0]);
             mStatus = parseC2PAStatus(response);
         } catch (Exception e) {
             Log.e(TAG,"signC2PA failed " + e);
             e.printStackTrace();
+        } finally {
+            if (nativeFd >= 0) {
+                try {
+                    Log.e(TAG, "nativeFreeFd fd = " + nativeFd);
+                    nativeFreeFd(nativeFd);
+                } catch (Throwable t) {
+                    Log.e(TAG, "nativeFreeFd failed", t);
+                }
+            }
+
+            if (ashmem != null && ashmem.fd != null) {
+                try {
+                    ashmem.fd.close();
+                } catch (Exception e) {
+                    Log.e(TAG,"ashmem.fd close failed " + e);
+                    e.printStackTrace();
+                }
+            }
         }
     }
     public  C2PAData getImageC2paData() {

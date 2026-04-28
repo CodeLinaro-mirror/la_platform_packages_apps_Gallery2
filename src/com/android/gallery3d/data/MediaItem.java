@@ -55,6 +55,8 @@ import org.json.JSONObject;
 import com.truepic.lensverify.data.c2padata.C2PAData;
 import com.truepic.lensverify.utils.C2PAPresenter;
 
+import java.io.File;
+
 // MediaItem represents an image or a video item.
 public abstract class MediaItem extends MediaObject {
     // NOTE: These type numbers are stored in the image cache, so it should not
@@ -159,6 +161,9 @@ public abstract class MediaItem extends MediaObject {
     }
 
     public int checkC2pa() {
+        if (!isUnder500MB(getFilePath())) {
+            return C2PAStatus.NON_C2PA.ordinal();
+        }
         if(!C2paUtil.isC2paEnabled()){
             return C2PAStatus.NON_C2PA.ordinal();
         }
@@ -171,6 +176,18 @@ public abstract class MediaItem extends MediaObject {
         Log.d(TAG, "C2PA info, file path " + getFilePath() + ",status:" + status.toString());
         mC2paFlag = status.ordinal();
         return mC2paFlag;
+    }
+
+    private static final long LIMIT_500MB = 500L * 1024 * 1024; // 524,288,000 bytes
+
+    public static boolean isUnder500MB(String path) {
+        if (path == null || path.isEmpty()) return false;
+
+        File f = new File(path);
+        if (!f.exists() || !f.isFile()) return false;
+
+        long size = f.length();
+        return size >= 0 && size <= LIMIT_500MB;
     }
 
     public static int getTargetSize(int type) {
